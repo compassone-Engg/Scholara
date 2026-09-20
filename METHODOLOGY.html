@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scholara — Methodology &amp; Sources</title>
+<meta name="description" content="How Scholara estimates a student's chance of admission: data sources, algorithm, weights, and known limitations. Written for guidance counselors and education researchers." />
+<link rel="icon" href="/favicon.svg" />
+<style>
+  :root{
+    --teal:#0F766E;
+    --teal-2:#14B8A6;
+    --teal-soft:#CCFBF1;
+    --ink:#0F1419;
+    --ink-2:#374151;
+    --muted:#6B7280;
+    --line:#E5E7EB;
+    --bg:#FAFAF7;
+    --paper:#FFFFFF;
+    --warn-bg:#FEF3C7;
+    --warn-line:#FCD34D;
+    --note-bg:#ECFDF5;
+    --note-line:#6EE7B7;
+    --code-bg:#F3F4F6;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.55;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1240px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:240px 1fr;gap:48px}
+  @media (max-width: 980px){.wrap{grid-template-columns:1fr;gap:0}}
+  header.top{
+    border-bottom:1px solid var(--line);
+    background:var(--paper);
+    padding:18px 0;
+    margin-bottom:32px;
+  }
+  header.top .inner{
+    max-width:1240px;margin:0 auto;padding:0 24px;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--ink);text-decoration:none;font-size:18px}
+  .brand .dot{width:30px;height:30px;border-radius:8px;background:var(--teal);display:grid;place-items:center;color:#fff;font-weight:800}
+  .brand .sub{color:var(--muted);font-weight:500;margin-left:4px;font-size:14px}
+  .top-actions{display:flex;gap:8px;align-items:center}
+  .top-actions a{
+    color:var(--ink-2);text-decoration:none;font-size:14px;font-weight:500;
+    padding:6px 12px;border-radius:6px;border:1px solid var(--line);background:#fff;
+  }
+  .top-actions a:hover{background:var(--teal-soft);border-color:var(--teal-2);color:var(--teal)}
+  nav.toc{
+    position:sticky;top:24px;align-self:start;
+    font-size:14px;
+    padding:12px 0;
+    max-height:calc(100vh - 48px);overflow:auto;
+  }
+  @media (max-width: 980px){nav.toc{position:relative;top:auto;max-height:none;border-bottom:1px solid var(--line);padding:12px 0 24px;margin-bottom:24px}}
+  nav.toc h4{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+  nav.toc ol{list-style:none;padding:0;margin:0;counter-reset:tocsec}
+  nav.toc li{counter-increment:tocsec;margin:0;padding:0}
+  nav.toc a{
+    display:block;padding:6px 8px;color:var(--ink-2);text-decoration:none;border-radius:6px;
+    border-left:2px solid transparent;
+  }
+  nav.toc a:before{content:counter(tocsec) ".";color:var(--muted);margin-right:6px;font-variant-numeric:tabular-nums}
+  nav.toc a:hover{background:#fff;color:var(--teal);border-left-color:var(--teal-2)}
+  main{min-width:0}
+  h1{font-size:36px;line-height:1.15;margin:0 0 12px;letter-spacing:-0.01em}
+  h2{font-size:24px;margin:48px 0 12px;padding-top:8px;letter-spacing:-0.01em;border-top:1px solid var(--line);padding-top:32px}
+  h2:first-of-type{border-top:none;padding-top:0;margin-top:32px}
+  h3{font-size:18px;margin:24px 0 10px}
+  h4{font-size:15px;margin:18px 0 8px;color:var(--ink-2)}
+  p,li{color:var(--ink-2)}
+  p{margin:0 0 14px}
+  ul,ol{padding-left:22px;margin:0 0 14px}
+  li{margin:4px 0}
+  a{color:var(--teal)}
+  code,pre,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px}
+  code{background:var(--code-bg);padding:1px 6px;border-radius:4px;color:#111827}
+  pre{
+    background:var(--code-bg);padding:14px 16px;border-radius:8px;overflow:auto;
+    border:1px solid var(--line);
+    font-size:13px;line-height:1.6;
+  }
+  blockquote.note,blockquote.warn{
+    margin:14px 0;padding:12px 16px;border-radius:8px;border-left:4px solid;
+  }
+  blockquote.note{background:var(--note-bg);border-left-color:#10B981}
+  blockquote.warn{background:var(--warn-bg);border-left-color:#F59E0B}
+  blockquote p{margin:0;color:#1F2937}
+  blockquote p + p{margin-top:8px}
+  .lead{font-size:18px;color:var(--ink-2);max-width:65ch;margin:0 0 16px}
+  .meta-row{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin-bottom:24px}
+  .meta-row span{padding:4px 10px;background:#fff;border:1px solid var(--line);border-radius:999px}
+  table{border-collapse:collapse;width:100%;font-size:14px;margin:14px 0 18px;background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#F9FAFB;font-weight:600;color:var(--ink);font-size:13px;letter-spacing:.01em}
+  tr:last-child td{border-bottom:none}
+  td.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:500;line-height:1.4}
+  .pill-fed{background:#DBEAFE;color:#1E40AF}
+  .pill-non{background:#E0E7FF;color:#3730A3}
+  .pill-crowd{background:#FCE7F3;color:#9D174D}
+  .pill-down{background:#D1FAE5;color:#065F46}
+  .pill-cat{background:#F3F4F6;color:#374151}
+  .pill-q{background:#FEF3C7;color:#92400E;font-variant-numeric:tabular-nums}
+  .formula{
+    background:#fff;border:1px solid var(--line);padding:14px 18px;border-radius:8px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;
+    overflow:auto;
+  }
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width: 720px){.grid-2{grid-template-columns:1fr}}
+  .card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px}
+  .card h4{margin-top:0}
+  .src-controls{
+    display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;padding:12px;
+    background:#fff;border:1px solid var(--line);border-radius:8px;
+  }
+  .src-controls input[type=search]{
+    flex:1;min-width:240px;padding:8px 10px;font-size:14px;border:1px solid var(--line);border-radius:6px;
+  }
+  .src-controls button{
+    padding:6px 12px;font-size:13px;border:1px solid var(--line);background:#fff;border-radius:6px;cursor:pointer;color:var(--ink-2);
+  }
+  .src-controls button.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .src-count{color:var(--muted);font-size:13px;align-self:center;margin-left:auto}
+  .source-row td:first-child{font-weight:600;color:var(--ink);width:30%}
+  .source-row .src-meta{font-size:12px;color:var(--muted);margin-top:4px}
+  .source-row a{font-size:12px}
+  .checklist{
+    background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px;
+  }
+  .checklist h4{margin-top:0}
+  .checklist ul{list-style:none;padding:0;margin:0}
+  .checklist li{
+    padding:10px 0;border-bottom:1px solid var(--line);
+    display:flex;gap:12px;align-items:flex-start;
+  }
+  .checklist li:last-child{border-bottom:none}
+  .checklist li:before{
+    content:"?";width:22px;height:22px;border-radius:50%;background:var(--teal-soft);color:var(--teal);
+    display:grid;place-items:center;font-weight:700;flex-shrink:0;font-size:13px;margin-top:1px;
+  }
+  footer{margin:64px 0 32px;padding:24px 0;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+  footer a{color:var(--ink-2)}
+  .hidden{display:none!important}
+  .tag-row{margin:4px 0 0;display:flex;gap:6px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="inner">
+    <a class="brand" href="/">
+      <span class="dot">S</span>
+      Scholara <span class="sub">Methodology &amp; Sources</span>
+    </a>
+    <div class="top-actions">
+      <a href="/">Back to App</a>
+      <a href="#critique">Send Feedback</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<nav class="toc" aria-label="Table of contents">
+  <h4>On this page</h4>
+  <ol>
+    <li><a href="#about">About this document</a></li>
+    <li><a href="#tldr">TL;DR — what we built</a></li>
+    <li><a href="#algorithm">The algorithm in plain English</a></li>
+    <li><a href="#math">The math, step by step</a></li>
+    <li><a href="#example">A worked example</a></li>
+    <li><a href="#benchmarks">Peer benchmarks</a></li>
+    <li><a href="#dataset">The 60-school dataset</a></li>
+    <li><a href="#cds">The Common Data Set pipeline</a></li>
+    <li><a href="#sources">All 77 cataloged sources</a></li>
+    <li><a href="#limits">Known limitations</a></li>
+    <li><a href="#data-collection">Data collection &amp; privacy</a></li>
+    <li><a href="#critique">For the counselor — what to critique</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<h1>How Scholara estimates a student&rsquo;s chance of admission</h1>
+<p class="lead">A transparent walk-through of the data, the math, and the places we want a guidance counselor to push back hard.</p>
+<div class="meta-row">
+  <span>Scholara MVP</span>
+  <span>Algorithm v1.1</span>
+  <span>60 schools, 77 cataloged sources</span>
+  <span>Data refreshed: IPEDS 2024&ndash;25 provisional</span>
+  <span>Last updated: May 2026</span>
+</div>
+
+<blockquote class="note">
+  <p><strong>What changed since v1 (May 2026 refresh).</strong> Input collection: students now tag each AP as <em>taken</em> / <em>taking</em> / <em>will take</em>, split activities into academic clubs vs. other, designate ED and EA at the school level (not as a single global flag), and choose a per-school test-submission mode (default: submit whichever yields the higher percentile at that school). We also collect intended major, nickname, and high school name. Student-facing surface: the numeric match score is no longer displayed &mdash; the headline output is a <strong>chance band</strong> (e.g. &ldquo;30&ndash;40%&rdquo;), the Safety / Match / Reach / Far Reach category label remains, and per-component readouts on the algorithm page now show the <strong>weight</strong> each factor carries at that school instead of a 0&ndash;100 component score. Persistence: profile data, favorites, applying list, and chat history now live in Supabase (Postgres + Row-Level Security) for signed-in users, behind passwordless magic-link auth. Underlying scoring math (weights, bonuses, exponential calibration) is unchanged from v1.</p>
+</blockquote>
+
+<h2 id="about">About this document</h2>
+<p>This page exists for one reason: we&rsquo;re asking you to challenge how we&rsquo;re building this. Scholara is a student-facing app that takes a high-school student&rsquo;s academic profile and produces, for each of 60 colleges, a <strong>category label</strong> (Safety / Match / Reach / Far Reach) and an <strong>estimated chance of admission expressed as a 10-point band</strong> (e.g. &ldquo;30&ndash;40%&rdquo;, or &ldquo;&gt;90%&rdquo; at the top). A numeric 0&ndash;100 match score is computed internally and powers everything downstream, but it is no longer surfaced to the student &mdash; the band is the headline.</p>
+<p>None of those outputs are pulled from a black-box model. They&rsquo;re computed from a deterministic formula that uses a small handful of student inputs (GPA, test scores, course rigor, activities) and a handful of per-school weights and reference distributions drawn from public data. The formula is small enough to hold in your head; everything below explains it.</p>
+<p><strong>What we want from you:</strong> tell us where the algorithm under- or over-rewards specific things, where the data is missing or wrong, and which signals you&rsquo;d expect a real college counselor to weigh that we&rsquo;re ignoring. The last section, <a href="#critique">For the counselor</a>, has a list of explicit prompts.</p>
+
+<h2 id="tldr">TL;DR &mdash; what we built</h2>
+<ul>
+  <li><strong>The data:</strong> 60 schools (30 California, 30 national reach), each with acceptance rate, SAT/ACT 25th/50th/75th percentiles, the GPA distribution of admitted students (in 5 bands), per-school admissions-factor weights, and ED/EA/RD deadlines. Refreshed to <strong>IPEDS 2024&ndash;25 provisional</strong> in May 2026 (204 field updates across the 60 schools).</li>
+  <li><strong>The primary upstream source</strong> is the <em>Common Data Set</em> (CDS) &mdash; the standardized self-report every institution publishes &mdash; cross-checked against IPEDS for the verified federal numbers (acceptance rate, test percentiles, enrollment).</li>
+  <li><strong>The algorithm</strong> takes a student&rsquo;s profile and computes four component scores in [0, 1]: GPA percentile (relative to that school&rsquo;s admit distribution), test percentile (relative to that school&rsquo;s 25/75 range, with a per-school test-optional override), course rigor (AP/IB/honors with AP status flags), and extracurricular strength (academic clubs and other activities). They&rsquo;re combined with the school&rsquo;s own factor weights, then small adjustments are applied for early decision (per-school), early action (per-school), legacy (per-school), and first-generation status.</li>
+  <li><strong>The output</strong> is a 0&ndash;100 match score computed internally, a category label (Safety / Match / Reach / Far Reach), and a 10-point chance band anchored to the school&rsquo;s actual acceptance rate. The band &mdash; not the raw 0&ndash;100 score &mdash; is what the student sees.</li>
+  <li><strong>Peer benchmarks.</strong> Alongside each prediction we surface CDS-derived peer benchmarks (the distribution of GPAs, test scores, and admit rates among accepted students at that tier) so the student can read their position against a real population, not against a single number.</li>
+  <li><strong>What we are NOT doing</strong>: we are not running a regression on real admit/deny outcomes. We do not learn from the student&rsquo;s submitted essays. We don&rsquo;t use teacher recommendations, demonstrated interest, or interview performance. We collect intended major but do not yet apply per-major selectivity adjustments. We use the same per-school weights for every applicant.</li>
+</ul>
+
+<h2 id="algorithm">The algorithm in plain English</h2>
+<p>For each school in the database, we ask five questions:</p>
+<ol>
+  <li><strong>How does the student&rsquo;s GPA compare to the GPAs of students this school has actually admitted?</strong> &mdash; using the GPA-band distribution from the school&rsquo;s Common Data Set (e.g., &ldquo;65% of admits had a 4.0+, 24% were 3.75&ndash;4.0, &hellip;&rdquo;).</li>
+  <li><strong>How does the student&rsquo;s test score compare to this school&rsquo;s middle 50% range?</strong> &mdash; using the SAT/ACT 25th and 75th percentile from IPEDS/CDS. The student picks a <strong>per-school submission mode</strong>: by default we submit whichever of SAT/ACT yields the higher percentile at that school (matching what a real applicant would do); the student can override to SAT-only, ACT-only, or test-optional on a per-school basis. If no score is submitted, we treat the student as &ldquo;average&rdquo; with a small penalty at very selective schools where most admits do submit.</li>
+  <li><strong>How rigorous is the student&rsquo;s course load relative to what this school typically expects?</strong> &mdash; AP count is normalized to a per-selectivity-tier target (10 / 7 / 5 / 3 AP courses for ultra-selective / highly-selective / selective / less-selective). Each AP carries a <em>status</em> &mdash; <strong>taken</strong>, <strong>currently taking</strong>, or <strong>will take</strong> &mdash; so the same student looks materially different mid-junior-year vs. senior-spring. APs of any status count toward the rigor base; only APs marked taken with a recorded score of 4 or higher contribute to the AP-quality bonus.</li>
+  <li><strong>How strong are their activities, given how much this school weights extracurriculars?</strong> &mdash; activities are split during collection into <em>academic clubs</em> (debate, science olympiad, research, etc.) and <em>other activities</em> (athletics, arts, service, work, leadership orgs). Both streams contribute, with credit for activity count, leadership roles, research/work experience, varsity athletics, and awards. The combined score is then scaled by whether the school marks ECs as &ldquo;Very Important,&rdquo; &ldquo;Important,&rdquo; &ldquo;Considered,&rdquo; or &ldquo;Not Considered&rdquo; in their CDS.</li>
+  <li><strong>What kind of application are they submitting and what are their hooks?</strong> &mdash; small additive bonuses for ED (+12 pts), EA (+4 pts), legacy (+8 pts), first-generation (+2 pts). ED and EA are now stored as <strong>per-school designations</strong> (you choose which school you&rsquo;re ED-ing to and which you&rsquo;re EA-ing to), so the bonus only fires at those schools. Legacy is also per-school. First-gen is a single profile-level flag.</li>
+</ol>
+<p>The four component scores are combined using <em>that school&rsquo;s own weights</em> (not a one-size-fits-all weighting). For example, MIT&rsquo;s test-score weight is heavier than UCLA&rsquo;s; UCLA&rsquo;s GPA weight is heavier than most private universities&rsquo;. Those per-school weights come from the &ldquo;factor importance&rdquo; section of the CDS and are stored in the dataset as four numbers per school (gpa_weight, test_weight, rigor_weight, ec_weight).</p>
+<p>The result is converted to a 0&ndash;100 score and mapped to a category (Safety / Match / Reach / Far Reach) using thresholds that adjust to the school&rsquo;s actual acceptance rate &mdash; so an 80 at Stanford is still a Reach, while an 80 at a 50%-acceptance state school is a Safety.</p>
+<p>Finally, the score is converted to a percentage chance using an exponential function anchored to the school&rsquo;s real acceptance rate, then snapped to a <strong>10-point chance band</strong> (&ldquo;0&ndash;10%&rdquo;, &ldquo;10&ndash;20%&rdquo;, &hellip;, &ldquo;&gt;90%&rdquo;) for display. We snap to bands because a &ldquo;13%&rdquo; prediction implies single-percentage-point precision the algorithm does not have; a band communicates the actual confidence interval honestly. The category label and the band are what the student sees; the numeric 0&ndash;100 score lives only in the internal pipeline.</p>
+
+<h2 id="math">The math, step by step</h2>
+
+<h3>1. GPA percentile (per-school)</h3>
+<p>Each school has a 5-band GPA distribution from its CDS, e.g.:</p>
+<pre>UCLA gpa_bands = { ">4.0": 40, "3.75-4.0": 30, "3.5-3.74": 20, "3.25-3.49": 7, "<3.25": 3 }</pre>
+<p>The student&rsquo;s GPA is placed into the corresponding band, the percentages of all <em>lower</em> bands are summed, and a linear interpolation is added for the partial position within the student&rsquo;s own band.</p>
+<div class="formula">gpaPercentile = sum(% of admits below student's band) + (position within band) &times; (% in band) &nbsp;&isin; [0, 1]</div>
+
+<h3>2. Test percentile (per-school)</h3>
+<p>Three-segment piecewise linear mapping using the school&rsquo;s reported 25th and 75th percentile.</p>
+<div class="formula">if score &le; p25:&nbsp;&nbsp;&nbsp;&nbsp;return (score / p25) &times; 0.25
+else if score &le; p75: return 0.25 + ((score - p25) / (p75 - p25)) &times; 0.50
+else:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 0.75 + ((score - p75) / (max - p75)) &times; 0.25
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# max = 1600 for SAT, 36 for ACT</div>
+<p>If a student submits both SAT and ACT, the algorithm picks the higher of the two percentiles at this school (matching the &ldquo;submit your stronger score&rdquo; default; the student can override per-school to force SAT-only or ACT-only). If they submit neither (test-optional), the score is set to 0.5 minus a selectivity penalty: 0.15 at ultra-selective, 0.10 at highly-selective, 0.05 at selective, 0 at less-selective, with a hard floor of 0.1.</p>
+
+<h3>3. Course rigor</h3>
+<p>The AP target depends on the school&rsquo;s selectivity tier; raw AP count is normalized against that target. Each AP carries a status set by the student: <code>taken</code> (already completed, may have a score), <code>in_progress</code> (currently enrolled), or <code>planned</code> (registered for a future term). All three statuses count toward <code>apCount</code>; only <code>taken</code> APs with a recorded score of 4 or 5 contribute to <code>apQuality</code>.</p>
+<div class="formula">apTarget = { ultra_selective: 10, highly_selective: 7, selective: 5, less_selective: 3 }[school.selectivity]
+apCount&nbsp;&nbsp;&nbsp;&nbsp;= count(profile.apCourses)&nbsp;&nbsp;# any status
+apScored4plus = count(c for c in apCourses if c.status == 'taken' and c.score &ge; 4)
+apScore&nbsp;&nbsp;&nbsp;&nbsp;= min(1, apCount / apTarget) &times; 0.6
+apQuality&nbsp;&nbsp;= min(0.25, (apScored4plus / max(1, apCount)) &times; 0.25)
+ibBonus&nbsp;&nbsp;&nbsp;&nbsp;= +0.15 if student is in IB program
+honorsBonus = min(0.10, honorsCount &times; 0.02)
+
+rigorScore = min(1, apScore + apQuality + ibBonus + honorsBonus)</div>
+
+<h3>4. Extracurriculars</h3>
+<p>Activities are collected in two streams during onboarding: <em>academic clubs</em> (debate, science olympiad, research/internships, academic competitions) and <em>other activities</em> (athletics, arts, service, work, leadership organizations). The algorithm reads them as a single combined list and credits depth-via-leadership, prestige (research/work), varsity athletics, and awards. The split during collection encourages students to think about academic depth separately from breadth; the algorithm itself does not yet apply a different multiplier to the academic stream (see &sect;&nbsp;<a href="#limits">Known limitations</a>). The combined EC score is then scaled by the school&rsquo;s factor label for ECs (read directly from the CDS). If the school marks ECs &ldquo;Not Considered,&rdquo; ECs cap at a flat 0.3.</p>
+<div class="formula">baseScore&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= min(1, activityCount / 8) &times; 0.4
+leadershipBonus = min(0.25, leadershipCount &times; 0.10)
+prestigeBonus&nbsp;= min(0.20, researchCount &times; 0.10 + workCount &times; 0.05)
+athleticsBonus = 0.05 if any varsity athletics activity
+awardsBonus&nbsp;&nbsp;&nbsp;= min(0.10, awardsCount &times; 0.025)
+
+ecScore = baseScore + leadershipBonus + prestigeBonus + athleticsBonus + awardsBonus
+if school marks ECs as "Considered" (not "Important"): ecScore &times;= 0.7
+ecScore = min(1, ecScore)</div>
+
+<h3>5. Per-school weighted sum</h3>
+<p>Each school carries its own weights from the CDS. For example, UCLA&rsquo;s weights are <code>gpa=0.35, test=0.25, rigor=0.20, ec=0.15</code> (sum 0.95). Any unaccounted-for weight (e.g. recommendations, essays) is filled in with a neutral 0.5 baseline so we don&rsquo;t penalize a strong applicant for things we can&rsquo;t measure.</p>
+<div class="formula">weighted = gpaPercentile&nbsp;&times; school.gpa_weight
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ testPercentile &times; school.test_weight
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ rigorScore&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&times; school.rigor_weight
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ ecScore&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&times; school.ec_weight
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ 0.5 &times; max(0, 1 - sum_of_weights)</div>
+
+<h3>6. Hooks &amp; application-type bonuses</h3>
+<table>
+  <thead><tr><th>Bonus</th><th>Magnitude</th><th>Applies when&hellip;</th></tr></thead>
+  <tbody>
+    <tr><td>Early Decision</td><td class="num">+0.12</td><td>Profile&rsquo;s <code>earlyDecisionSchool</code> equals this school&rsquo;s unitid</td></tr>
+    <tr><td>Early Action</td><td class="num">+0.04</td><td>Profile&rsquo;s <code>earlyActionSchool</code> equals this school&rsquo;s unitid</td></tr>
+    <tr><td>Legacy</td><td class="num">+0.08</td><td>This school&rsquo;s unitid is in the profile&rsquo;s <code>legacySchools</code> list</td></tr>
+    <tr><td>First-generation</td><td class="num">+0.02</td><td>Student is first-gen (single profile-level flag, applies to every school)</td></tr>
+  </tbody>
+</table>
+<p>ED is binding and single-school; EA is also stored as a single per-school designation for now. Both fire only at the designated school &mdash; not as a global &ldquo;applying ED somewhere&rdquo; flag &mdash; which matches how the actual admissions advantage works. These bonuses are added directly to the weighted sum (which lives on a 0&ndash;1 scale), then the total is multiplied by 100 and clamped to [0, 100] to produce the internal match score.</p>
+
+<h3>7. Score &rarr; category</h3>
+<p>The Safety / Match / Reach / Far Reach thresholds shift with the school&rsquo;s acceptance rate, so high scores at ultra-selective schools are still treated as Reach. The category label IS shown to the student; the underlying 0&ndash;100 match score is not.</p>
+<table>
+  <thead><tr><th>Acceptance rate</th><th>Safety</th><th>Match</th><th>Reach</th><th>Far Reach</th></tr></thead>
+  <tbody>
+    <tr><td>&lt; 8%</td><td>&mdash;</td><td>&mdash;</td><td>&ge; 65</td><td>&lt; 50</td></tr>
+    <tr><td>8&ndash;25%</td><td>&mdash;</td><td>&ge; 80</td><td>&ge; 50</td><td>&lt; 50</td></tr>
+    <tr><td>25&ndash;50%</td><td>&ge; 80</td><td>&ge; 65</td><td>&ge; 50</td><td>&lt; 50</td></tr>
+    <tr><td>&ge; 50%</td><td>&ge; 70</td><td>&ge; 55</td><td>&ge; 40</td><td>&lt; 40</td></tr>
+  </tbody>
+</table>
+
+<h3>8. Score &rarr; estimated chance %</h3>
+<p>The match score is an applicant-relative ranking; the chance % is anchored to the school&rsquo;s actual base rate via an exponential.</p>
+<div class="formula">scoreDelta&nbsp;= (matchScore - 50) / 50&nbsp;&nbsp;&nbsp;# range: -1 to +1
+multiplier&nbsp;= exp(scoreDelta &times; 2.5)
+rawChance&nbsp;&nbsp;= acceptanceRate &times; multiplier
+minChance&nbsp;&nbsp;= max(0.002, acceptanceRate &times; 0.05)
+maxChance&nbsp;&nbsp;= min(0.95,&nbsp; acceptanceRate &times; 8)
+chance&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= clamp(rawChance, minChance, maxChance)</div>
+<blockquote class="note"><p><strong>Why exponential?</strong> So that a strong applicant at a 5%-acceptance school sees a meaningful uplift, while a weak applicant at a 50%-acceptance school still sees a non-zero floor. The 8&times; cap exists so a perfect-on-paper student at Harvard doesn&rsquo;t see a 95% chance &mdash; the cap pulls them back to 8&times; the base rate (~32%), which is closer to what published Naviance scattergrams suggest is realistic for a top-tier candidate.</p></blockquote>
+<h4>The chance band shown to the student</h4>
+<p>The clamped raw chance % is then snapped to a <strong>10-point band</strong> for display:</p>
+<div class="formula">if chancePct &ge; 90: band = "&gt;90%"
+elif chancePct &lt; 10: band = "0&ndash;10%"
+else: low = floor(chancePct / 10) &times; 10; band = f"{low}&ndash;{low+10}%"</div>
+<p>The band &mdash; not the exact percentage &mdash; is what the student sees in school cards, the school-detail page, the algorithm-explain page, and the What-If sandbox. A 13% prediction becomes &ldquo;10&ndash;20%&rdquo;. The justification is the same one a careful counselor would give: the algorithm cannot honestly resolve admit chance to single-percentage-point precision, and showing it that way trains students to over-rely on a number that isn&rsquo;t that informative.</p>
+
+<h2 id="example">A worked example</h2>
+<p>Meet Maya, an 11th-grader. Profile:</p>
+<ul>
+  <li>Unweighted GPA: 3.80</li>
+  <li>SAT: 1420 (single sitting)</li>
+  <li>6 AP courses, 5 with score &ge; 4</li>
+  <li>4 honors courses, no IB</li>
+  <li>7 activities: 3 with leadership, 1 research, 1 paid work, 1 varsity athletics</li>
+  <li>2 awards, not first-gen, no legacy, applying RD</li>
+</ul>
+<p>Target school: UCLA. UCLA values: <code>acceptance_rate=8.7%</code>, <code>sat_25=1310, sat_75=1480</code>, <code>gpa_weight=0.35, test=0.25, rigor=0.20, ec=0.15</code>, ECs labeled &ldquo;Important,&rdquo; selectivity = highly-selective.</p>
+<table>
+  <thead><tr><th>Step</th><th>Calculation</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td>GPA percentile</td><td>3.0% (below 3.25) + 7% (3.25&ndash;3.49) + 20% (3.5&ndash;3.74) + 30% &times; (3.80&minus;3.75)/0.25 = 30 + 6 = 36%</td><td class="num">0.36</td></tr>
+    <tr><td>Test percentile</td><td>1420 is in 25&ndash;75 band: 0.25 + (1420&minus;1310)/(1480&minus;1310) &times; 0.50 = 0.574</td><td class="num">0.57</td></tr>
+    <tr><td>Rigor</td><td>min(1, 6/7) &times; 0.6 = 0.514, AP-quality 5/6 &times; 0.25 = 0.208, honors min(0.1, 4&times;0.02) = 0.08</td><td class="num">0.80</td></tr>
+    <tr><td>EC</td><td>base 7/8 &times; 0.4 = 0.35; leadership 3 &times; 0.1 = 0.25; research 0.10 + work 0.05 = 0.15; varsity 0.05; awards 2 &times; 0.025 = 0.05</td><td class="num">0.85</td></tr>
+    <tr><td>Weighted sum</td><td>0.36 &times; 0.35 + 0.57 &times; 0.25 + 0.80 &times; 0.20 + 0.85 &times; 0.15 + 0.5 &times; 0.05 = 0.582</td><td class="num">0.58</td></tr>
+    <tr><td>Bonuses (RD, no legacy, not first-gen)</td><td>0</td><td class="num">0.00</td></tr>
+    <tr><td>Match score</td><td>round(0.582 &times; 100)</td><td class="num">58</td></tr>
+    <tr><td>Category (8&ndash;25% band, score 58)</td><td>50 &le; 58 &lt; 65 &rarr; <strong>Reach</strong></td><td class="num">Reach</td></tr>
+    <tr><td>Estimated chance</td><td>delta = 0.16, mult = exp(0.40) = 1.49, raw = 0.087 &times; 1.49 = 13.0% (under 70% cap)</td><td class="num">13%</td></tr>
+  </tbody>
+</table>
+<p>The app would show Maya: &ldquo;UCLA &mdash; <strong>Reach</strong>, estimated chance <strong>10&ndash;20%</strong>.&rdquo; The 58 score and the four 0&ndash;100 component figures are computed under the hood but not surfaced; on the algorithm-explain page each of the four factors instead carries a large &ldquo;<strong>35%</strong> weight at this school&rdquo; readout (the per-school weight from the CDS), letting Maya see <em>where</em> UCLA puts its emphasis rather than how she &ldquo;scored&rdquo;. Alongside that, a peer-benchmark strip shows the GPA / test distribution of accepted UCLA students so she can locate herself in the actual admit pool. The &ldquo;top tip&rdquo; generator would suggest raising her GPA as the highest-leverage move, framed positively given her grade and rigor.</p>
+
+<h2 id="benchmarks">Peer benchmarks</h2>
+<p>For every surface where the algorithm renders an opinion (school card, school detail page, algorithm-explain page, What-If sandbox, AI counselor tool calls, the test-optional toggle, the legacy controls, and the onboarding completion screen), the student also sees a <strong>peer-benchmark strip</strong>: a CDS-derived snapshot of the actual accepted-student population at that school or at that selectivity tier &mdash; GPA distribution, SAT/ACT 25th/50th/75th, admit rate, percent submitting tests, and (where the CDS publishes it) the factor-importance pattern.</p>
+<p>Benchmarks are intentionally separate from the prediction. They answer &ldquo;what does the admit pool actually look like&rdquo; rather than &ldquo;am I in or out.&rdquo; A student staring at a Reach with a 10&ndash;20% band who can also see the 25/50/75 GPA spread and the test-submission rate among admits gets a much more grounded reading than the band alone provides. The benchmark logic lives in a single shared library and only sources fields from CDS (or IPEDS when CDS is silent) &mdash; it never invents distributional shape.</p>
+<p>The benchmark surface is the single biggest information-density change since v1. The bands and the benchmarks were designed together: the band sets the prediction, the benchmark gives the student a population to read it against.</p>
+
+<h2 id="dataset">The 60-school dataset</h2>
+<p>Each row in <code>schools.json</code> follows this schema:</p>
+<pre>{
+  "unitid": "110662",
+  "name": "UCLA",
+  "short": "UCLA",
+  "type": "california",
+  "city": "Los Angeles",
+  "state": "CA",
+  "acceptance_rate": 0.0873,
+  "applicants": 145882,
+  "admitted": 12824,
+  "enrolled": 6488,
+  "sat_25": 1310, "sat_50": 1400, "sat_75": 1480,
+  "act_25": 29,&nbsp;&nbsp; "act_50": 31,&nbsp;&nbsp; "act_75": 34,
+  "selectivity": "highly_selective",
+  "gpa_weight": 0.35, "test_weight": 0.25, "rigor_weight": 0.20, "ec_weight": 0.15,
+  "factor_labels": { "gpa": "Very Important", "tests": "Very Important", "rigor": "Very Important", "ec": "Important" },
+  "gpa_bands": { ">4.0": 40, "3.75-4.0": 30, "3.5-3.74": 20, "3.25-3.49": 7, "<3.25": 3 },
+  "ed_deadline": null, "ea_deadline": null, "rd_deadline": "2024-11-30"
+}</pre>
+<h3>Coverage of the current 60</h3>
+<ul>
+  <li><strong>30 California</strong> &mdash; UCs (UCLA, Cal, San Diego, Davis, Irvine, Santa Barbara, Santa Cruz, Riverside, Merced), top CSUs, Stanford, USC, Caltech, Pomona, Harvey Mudd, Claremont McKenna, Pitzer, Scripps, Occidental, Loyola Marymount, Pepperdine, Santa Clara, USF, Chapman, others.</li>
+  <li><strong>30 National</strong> &mdash; all 8 Ivies plus MIT, Duke, Vanderbilt, Northwestern, UChicago, Hopkins, Rice, Notre Dame, Emory, WashU, Carnegie Mellon, Georgetown, Tufts, Michigan, UNC, UVA, Wake Forest, BU, NYU, BC, others.</li>
+  <li><strong>By selectivity</strong>: 20 ultra-selective, 17 highly-selective, 15 selective, 8 less-selective.</li>
+</ul>
+<h3>Why these 60 and not 600?</h3>
+<p>The bottleneck was per-school CDS coverage. We needed each school to have parsed <em>factor importance labels</em> and a <em>GPA band distribution</em> &mdash; the two CDS-only fields the algorithm depends on. Of ~4,000 institutions that publish a CDS annually, only 100 had been pre-parsed by our upstream aggregator (GradGPT&rsquo;s open dataset), and only 74 of those 100 had complete GPA-band data. The 60-school cut is the intersection of that usable slice with the &ldquo;California + top national&rdquo; demo target.</p>
+<blockquote class="note"><p><strong>Data freshness (May 2026).</strong> Acceptance rates, applicant / admitted / enrolled counts, and SAT/ACT 25th/50th/75th percentiles were refreshed against the <strong>IPEDS 2024&ndash;25 provisional</strong> release &mdash; 204 field updates across the 60 schools. The factor-importance labels and GPA-band distributions still come from the most recently published CDS per institution (typically 2023&ndash;24 cycle, with some schools on 2024&ndash;25). Application-cycle deadlines need a fresh pass for the 2026&ndash;27 cycle before any student uses Scholara to track their own deadlines &mdash; the current values still reflect 2024&ndash;25 cycle dates.</p></blockquote>
+
+<h2 id="cds">The Common Data Set pipeline</h2>
+<p>The Common Data Set is a standardized form most US colleges publish each year, by agreement with College Board, Peterson&rsquo;s, and U.S. News. Sections C1&ndash;C12 describe admissions: how many applied / admitted / enrolled, the SAT/ACT 25th/75th percentiles, the GPA band distribution of admits, the &ldquo;factors importance&rdquo; matrix (which rates 19 admissions criteria as Very Important / Important / Considered / Not Considered), early decision/action breakdowns, and waitlist behavior.</p>
+<p>CDS is the closest thing to ground truth on <em>what a school says it actually weighs</em>. It is also painful to ingest: every school publishes its own PDF or Excel on its institutional research page, with no central download, and small layout variations between schools. Our current corpus uses the <strong>GradGPT</strong> open dataset, which has 100 institutions parsed.</p>
+<h3>Coverage of the GradGPT CDS aggregation we use</h3>
+<table>
+  <thead><tr><th>Field</th><th>Coverage (out of 100 schools)</th></tr></thead>
+  <tbody>
+    <tr><td>Acceptance rate</td><td class="num">100 / 100</td></tr>
+    <tr><td>Admissions factor labels (the 19-factor importance matrix)</td><td class="num">100 / 100</td></tr>
+    <tr><td>SAT composite 25/75</td><td class="num">89 / 100</td></tr>
+    <tr><td>ACT composite 25/75</td><td class="num">87 / 100</td></tr>
+    <tr><td>GPA bands (4+ buckets present)</td><td class="num">74 / 100</td></tr>
+    <tr><td>Early Decision applied / admitted / rate breakdown</td><td class="num">0 / 100</td></tr>
+  </tbody>
+</table>
+<blockquote class="warn"><p><strong>The ED bonus is a flat +0.12 because the corpus has zero parsed ED breakdowns.</strong> Real ED uplift varies dramatically by school &mdash; ED rates at some schools are 2&ndash;3&times; the regular rate; at others they&rsquo;re only 1.2&times;. This is a candidate for the first algorithm refinement once we ingest the per-school C2 sections.</p></blockquote>
+<h3>Cross-check against IPEDS</h3>
+<p>For acceptance rates, applicant counts, enrollment counts, and SAT/ACT percentiles, we use the IPEDS Admissions (ADM) survey as the canonical source rather than the CDS self-report &mdash; IPEDS is mandatory federal reporting under Title IV and is independently auditable. The CDS is used only for fields IPEDS does not collect: the <em>factor importance labels</em> and the <em>GPA band distribution of admits</em>.</p>
+
+<h2 id="sources">All 77 cataloged sources</h2>
+<p>During the research phase, we evaluated 77 distinct public and commercial data sources for usefulness, accuracy, and accessibility. Of those, 11 were actually downloaded and integrated into the current dataset; the remaining 66 are cataloged for future expansion. The table is searchable and filterable.</p>
+<div class="src-controls">
+  <input type="search" id="src-search" placeholder="Search 77 sources by name, organization, or content&hellip;" autocomplete="off" />
+  <button class="filter-cat on" data-cat="all">All</button>
+  <button class="filter-cat" data-cat="federal">Federal &amp; gov</button>
+  <button class="filter-cat" data-cat="nonprofit">Nonprofit &amp; academic</button>
+  <button class="filter-cat" data-cat="crowdsourced">Crowdsourced &amp; commercial</button>
+  <button class="filter-status" data-status="all">All status</button>
+  <button class="filter-status" data-status="downloaded">Downloaded only</button>
+  <span class="src-count" id="src-count">&mdash;</span>
+</div>
+<table id="sources-table">
+  <thead><tr>
+    <th>Source</th>
+    <th>What it provides</th>
+    <th>Coverage</th>
+    <th>Format</th>
+    <th>Quality</th>
+  </tr></thead>
+  <tbody id="sources-body"></tbody>
+</table>
+
+<h2 id="limits">Known limitations</h2>
+<ol>
+  <li><strong>The dataset has 60 schools, not 4,000.</strong> If a student&rsquo;s actual list includes Williams, Amherst, Penn State, Purdue, or Georgia Tech, those aren&rsquo;t scored. Expanding requires per-school CDS ingestion or a regression-based imputation from IPEDS-only fields, both of which are work we haven&rsquo;t done.</li>
+  <li><strong>Application-cycle deadlines are still stale.</strong> Acceptance rates and test percentiles were refreshed to IPEDS 2024&ndash;25 provisional in May 2026; ED/EA/RD deadlines still reflect the 2024&ndash;25 cycle and need a fresh pass before the 2026&ndash;27 cycle opens.</li>
+  <li><strong>The algorithm is rules-based, not learned.</strong> We do not regress real outcomes (admit/deny/waitlist) onto student profiles. The Reddit r/collegeresults archive (cataloged but not yet integrated) is the candidate dataset for that. Without a fitted model, our weights, bonus magnitudes, and exponential calibration are educated guesses informed by published research, not values that minimize error against actual outcomes.</li>
+  <li><strong>The student profile is self-reported.</strong> No transcript ingestion, no test-score verification, no activity-list normalization. A student can claim 12 APs they didn&rsquo;t take.</li>
+  <li><strong>We collect intended major but don&rsquo;t use major-specific selectivity.</strong> Students pick from a canonical list (CS, engineering, biology, business, &hellip;) during onboarding, but the algorithm still scores every applicant against the institution-wide acceptance rate. Computer Science, EECS, and Wharton/Ross-style business admit rates can be 2&ndash;5&times; lower than the institution average; we don&rsquo;t yet reflect that. The major field is currently surfaced in the AI counselor&rsquo;s prompt context and is a hook for post-MVP per-major modeling.</li>
+  <li><strong>Activities are split during collection but combined during scoring.</strong> Onboarding asks for academic clubs and other activities separately so students think about academic depth, but the EC formula treats the merged list as a single input. A future refinement would apply a different multiplier to the academic stream at schools whose CDS marks academic ECs as more important than general ECs.</li>
+  <li><strong>We don&rsquo;t use demonstrated interest.</strong> Some schools (BU, Tufts, NYU, WashU historically) consider it materially; CDS factor labels capture this in principle, but we don&rsquo;t have a corresponding student-side input field.</li>
+  <li><strong>We don&rsquo;t use recommendations or essays.</strong> CDS lists these as &ldquo;Very Important&rdquo; at most selective schools; we treat that weight as a flat 0.5 baseline.</li>
+  <li><strong>The ED bonus is fixed at +0.12 for every school.</strong> Real ED uplift varies. We&rsquo;ll fix this when CDS Section C2 (ED applied/admitted) is parsed.</li>
+  <li><strong>The CDS itself is self-reported by schools.</strong> Schools have an incentive to make admit profiles look strong; the &ldquo;factor labels&rdquo; in particular are a soft signal &mdash; nothing forces a school to label essays &ldquo;Very Important&rdquo; if they want to publicly suggest holistic review while operationally weighting test scores heavily.</li>
+  <li><strong>Race / ethnicity is not used in scoring.</strong> Post-<em>Students for Fair Admissions v. Harvard</em> (2023), we deliberately do not condition match scores on race. We do however expose first-gen status, since some schools publicly report a first-gen preference.</li>
+</ol>
+
+<h2 id="data-collection">Data collection &amp; privacy</h2>
+<p>For the closed beta, Scholara collects <strong>anonymous usage events</strong> (e.g. which schools were viewed, which filters were used, when onboarding was completed) and writes them to a Cloudflare D1 database. The goal is to learn what testers actually do in the app so we can iterate &mdash; not to identify or track individuals.</p>
+
+<h3>What is collected</h3>
+<ul>
+  <li>A <strong>per-browser pseudonymous ID</strong> &mdash; a random UUID generated locally and stored in the browser&rsquo;s <code>localStorage</code>. It is not linked to any account, email, or device fingerprint, and a different browser on the same device gets a different ID.</li>
+  <li>App events such as <code>onboarding_started</code>, <code>onboarding_completed</code>, <code>school_viewed</code>, <code>school_favorited</code>, <code>school_unfavorited</code>, <code>school_marked_applying</code>, <code>school_unmarked_applying</code>, <code>schools_filtered</code>, <code>methodology_viewed</code>, <code>milestone_unlocked</code>, <code>roadmap_item_completed</code>, <code>what_if_opened</code>, <code>favorite_limit_hit</code>.</li>
+  <li>For onboarding completion, a small set of <strong>bucketed</strong> attributes (e.g. GPA band <code>3.5&ndash;3.74</code>, SAT band <code>1400&ndash;1499</code>, AP-count band <code>3&ndash;4</code>). Raw scores are never sent.</li>
+  <li>School unitids when a school card is viewed or marked &mdash; these are public Department of Education identifiers, not personal data.</li>
+</ul>
+
+<h3>What is <em>not</em> collected</h3>
+<ul>
+  <li>No name, email, phone, or any contact info &mdash; the app never asks for them.</li>
+  <li>No raw GPA, raw test scores, or exact activity descriptions.</li>
+  <li>No race, ethnicity, gender, religion, or other special-category data.</li>
+  <li>No IP address logging beyond what Cloudflare retains for standard request routing.</li>
+  <li>No third-party trackers, advertising pixels, Google Analytics, or marketing cookies.</li>
+</ul>
+
+<h3>Where the student profile lives</h3>
+<p>Scholara now requires sign-in. The full student profile (name, nickname, exact GPA, test scores, activity descriptions, AP courses, intended major, high school, ED/EA designations, legacy list, favorites list, applying list) is stored in <strong>Supabase Postgres</strong>, one row per student keyed on the user&rsquo;s authenticated UUID. Match scores are still computed <em>in the browser</em> &mdash; the server holds the inputs, not the predictions. Row-Level Security (RLS) policies enforce that a row is readable and writable only by the user who owns it; no service-role key ever runs in the browser.</p>
+<p>Authentication is <strong>magic-link only</strong>. The student enters an email, receives a one-tap login link sent from <code>noreply@scholara.metaba.ai</code> via Supabase Auth + Resend SMTP, and is signed in &mdash; no password is stored anywhere. There is no Google / Apple / Facebook OAuth, no SSO; the auth surface is intentionally small for the closed beta.</p>
+<p>For users who are signed out (e.g. exploring the marketing site or methodology page), no profile data is collected.</p>
+
+<h3>What lives in Supabase, exactly</h3>
+<ul>
+  <li><code>profiles</code> &mdash; one row per user, mirroring the StudentProfile shape (RLS: owner-only).</li>
+  <li><code>favorites</code>, <code>applying</code> &mdash; per-user lists of school unitids (RLS: owner-only).</li>
+  <li><code>milestones</code>, <code>roadmap_completions</code>, <code>checklist_progress</code> &mdash; per-user progress state (cloud-shaped; some still write to localStorage as of the May 2026 cut and are being migrated in subsequent phases).</li>
+  <li><code>chat_conversations</code>, <code>chat_messages</code> &mdash; per-user history of the AI counselor sessions, so the student can pick up where they left off across devices. RLS owner-only.</li>
+  <li><code>chat_rate_limit</code> &mdash; per-user message counters used to enforce the daily cap.</li>
+  <li><code>student_events</code> &mdash; the anonymized telemetry stream (see above), keyed by the per-browser pseudonymous ID rather than the user id where possible.</li>
+</ul>
+
+<h3>The AI counselor (chat tab)</h3>
+<p>Scholara includes an AI guidance counselor in the Counselor tab. It runs on Google&rsquo;s Gemini API. When the user sends a message:</p>
+<ul>
+  <li>The chat sends the message text, the student&rsquo;s profile (so the AI can give specific advice), the student&rsquo;s favorites + applying lists, and the conversation&rsquo;s recent history to a Cloudflare-hosted endpoint, which forwards them to Google Gemini.</li>
+  <li>Google&rsquo;s data-handling terms apply to that traffic; Google&rsquo;s commitment is that paid-tier API requests are not used to train their models.</li>
+  <li>For continuity, both the user&rsquo;s message text and the AI reply text are <strong>persisted to Supabase</strong> in the user&rsquo;s own <code>chat_messages</code> rows (RLS owner-only), so the student can resume a conversation from any device they sign in on. This is a deliberate change from the v1 design, which did not store chat text server-side; it was made because cross-device continuity is the main reason most users actually sign in.</li>
+  <li>For telemetry, we additionally store one row per chat turn in our Cloudflare D1 database with: the per-browser pseudonymous ID, conversation ID, model name, token counts, list of tool names called, and duration. The telemetry rows do <strong>not</strong> contain message text.</li>
+  <li>The chatbot is constrained by tool calling: it cannot quote a deadline, policy, peer benchmark, or admission stat without first calling a deterministic tool that reads from the published dataset. This makes hallucinated facts mechanically harder. The peer-benchmarks tool is one of the tools the model can call.</li>
+  <li>Daily message cap: 30 messages per user per day (enforced via <code>chat_rate_limit</code>), to prevent runaway cost and to flag abusive use.</li>
+</ul>
+
+<h3>Opting out</h3>
+<p>A toggle in the Profile tab disables anonymized event collection for that browser instantly. When disabled, the queued events are dropped and no further events are sent. The chatbot still works (it needs to send messages to Gemini to function), but no telemetry rows are stored.</p>
+<p>The signed-in profile itself can be cleared by signing out (the local browser session is dropped, the Supabase row remains) or by emailing us to delete the account row entirely. We&rsquo;ll add a self-serve account-delete flow before the public launch.</p>
+
+<h3>Why we&rsquo;re telling you this</h3>
+<p>Two reasons. First, transparency about the algorithm and transparency about data should match &mdash; if you can read this whole document about how chances are computed, you should equally know what is being measured about you. Second, we want guidance counselors to feel comfortable forwarding the URL to colleagues and to students; that requires no surprises.</p>
+
+<h2 id="critique">For the counselor &mdash; what to critique</h2>
+<p>Specific things we&rsquo;d especially like your push-back on. The questions are designed to be answerable in a few sentences each.</p>
+<div class="checklist">
+  <h4>Algorithm shape</h4>
+  <ul>
+    <li>Are the AP-count targets (10 / 7 / 5 / 3 for ultra-selective / highly / selective / less-selective) reasonable for what students at those tiers actually present? Should ultra-selective be higher? Lower?</li>
+    <li>Is +0.12 (12 points on the 100-point scale) the right magnitude for an ED bonus? Naviance scattergrams suggest 2&ndash;3&times; the regular acceptance rate at many schools; does the resulting chance uplift look right to you in the worked example above?</li>
+    <li>Is the +0.08 legacy bonus too large given that 2026 admissions have moved away from legacy at many institutions? Should it be school-specific or zero by default?</li>
+    <li>Is the test-optional baseline (0.5 minus 0.05&ndash;0.15 by selectivity) too punitive or too forgiving? Counselors see the actual outcomes &mdash; is a no-score student really half as competitive as a 75th-percentile scorer at a highly-selective school?</li>
+    <li>Is the EC scoring too quantitative? Should &ldquo;depth of one major activity over four years&rdquo; outweigh &ldquo;eight activities with one leadership role each&rdquo;? Right now the formula rewards both about equally.</li>
+  </ul>
+</div>
+<div class="checklist">
+  <h4>Inputs we&rsquo;re missing</h4>
+  <ul>
+    <li>Demonstrated interest. Worth adding a profile field (campus visit, info session, opened emails) or not? Which schools meaningfully reward it in 2026?</li>
+    <li>Intended major. We currently score every applicant against the institution-wide acceptance rate. For highly major-selective schools (CS at CMU, Berkeley EECS, Wharton, Ross), this dramatically understates difficulty. Is per-major modeling worth the data-collection cost?</li>
+    <li>High-school context. Naviance scattergrams provide the strongest predictive signal at any one school for that school&rsquo;s applicants. We don&rsquo;t use them. Is there a counselor-friendly way to elicit &ldquo;top 10%&rdquo; / &ldquo;top 25%&rdquo; rank from the student?</li>
+    <li>Recommendation strength. We treat it as a 0.5 neutral baseline. Should we ask the student to rate their recommender relationship, or is that too unreliable?</li>
+    <li>Application essay quality. We don&rsquo;t score it. Should we ask the student a self-assessment, or skip the input?</li>
+  </ul>
+</div>
+<div class="checklist">
+  <h4>Output framing</h4>
+  <ul>
+    <li>Does &ldquo;Reach&rdquo; / &ldquo;Match&rdquo; / &ldquo;Safety&rdquo; / &ldquo;Far Reach&rdquo; map to how counselors actually advise? Should a 10&ndash;20% band at UCLA in our worked example read as &ldquo;Reach,&rdquo; &ldquo;Far Reach,&rdquo; or something else?</li>
+    <li>Is the 10-point chance band (&ldquo;10&ndash;20%&rdquo;) the right granularity, or should it be coarser (e.g. four buckets aligned to the category labels)? We replaced the previous exact-percentage UI because it implied false precision &mdash; does the band go far enough?</li>
+    <li>On the algorithm-explain page we now show <strong>per-school weights</strong> (&ldquo;GPA: 35% weight at this school&rdquo;) instead of per-component 0&ndash;100 scores. Is that the right swap, or do counselors want a way to peek at where the student stands on each component?</li>
+    <li>The peer-benchmarks strip (CDS-derived) sits next to the prediction on every relevant surface. Does seeing the admit pool distribution change how you&rsquo;d coach a student to react to a band? Are there benchmark dimensions we should be showing but aren&rsquo;t?</li>
+  </ul>
+</div>
+<div class="checklist">
+  <h4>The new input model (v1.1)</h4>
+  <ul>
+    <li>AP courses now carry a status &mdash; <em>taken</em>, <em>currently taking</em>, or <em>will take</em>. The algorithm credits all three toward AP count but only credits scored APs (&ge; 4) toward AP quality. Is that the right behavior? Should a senior with three APs &ldquo;will take&rdquo; in the spring be discounted relative to a senior with three already taken?</li>
+    <li>Activities are now collected in two streams (academic clubs vs. other activities) but merged for scoring. Should the academic stream carry a different weight at schools whose CDS flags academics-heavy ECs as Very Important?</li>
+    <li>ED and EA are now single-school designations stored on the profile rather than a global &ldquo;applying ED/EA somewhere&rdquo; flag. The bonus only fires at the designated school. Does that feel right, given that most students realistically only ED once?</li>
+    <li>Test submission is per-school: the default is &ldquo;submit whichever yields the higher percentile at this school,&rdquo; with overrides to SAT-only, ACT-only, or test-optional per school. Is that decision surface too granular for students, or appropriately faithful to how strategy actually works?</li>
+    <li>We collect intended major but don&rsquo;t yet adjust scoring per major (Wharton vs. Penn CAS, CS vs. CMU MCS, EECS vs. Berkeley L&amp;S). The Limitations section lists this. Is per-major modeling the single highest-value next-feature for accuracy?</li>
+  </ul>
+</div>
+<div class="checklist">
+  <h4>Data sources we should integrate next</h4>
+  <ul>
+    <li>If you had to pick one of the 66 cataloged-but-not-integrated sources from the table above to add next, which one and why?</li>
+    <li>Are there sources <em>not in our 77</em> that you rely on professionally that we&rsquo;ve missed entirely?</li>
+  </ul>
+</div>
+
+<p style="margin-top:24px"><strong>How to send feedback:</strong> please email <a href="mailto:ashish.khera@scientificanimations.com?subject=Scholara%20methodology%20feedback">ashish.khera@scientificanimations.com</a> with anything from a one-line correction to a full critique. Quoting section numbers (e.g. &ldquo;Section 5: rigor scoring&rdquo;) is appreciated but not required.</p>
+
+<footer>
+  Scholara is built on public data. The IPEDS, College Scorecard, NCES, Common Data Set, Opportunity Insights, and AP Program data referenced here are publicly available; the algorithm and weights are documented in this page.
+  &nbsp;&middot;&nbsp; <a href="/">Return to app</a>
+</footer>
+
+</main>
+</div>
+
+<script type="application/json" id="sources-data">[{"name":"IPEDS Admissions Component (ADM)","org":"National Center for Education Statistics (NCES), U.S. Department of Education","url":"https://nces.ed.gov/ipeds/","what":"Acceptance rates, SAT/ACT 25th/75th percentiles, enrollment counts, admissions considerations, test policy flags, and demographic breakdowns for all Title IV institutions.","coverage":"6,400-7,400 institutions; annual data from 2014-15 onward","format":"CSV","quality":9,"use":"Backbone of institutional database for acceptance rates and SAT/ACT score ranges. Most comprehensive source for non-open-admissions institutions.","category":"federal","status":"downloaded"},{"name":"College Scorecard","org":"U.S. Department of Education","url":"https://collegescorecard.ed.gov/data/","what":"Acceptance rates, SAT/ACT percentiles, earnings outcomes 6/10 years post-enrollment (from IRS tax records), completion rates, financial aid, debt metrics, and field-of-study outcomes.","coverage":"~6,700 institutions; data from 1997 to present","format":"CSV and JSON API","quality":9,"use":"Unique link to post-enrollment earnings outcomes. Complements IPEDS for career outcomes and net price by income. Programmatic access via free API.","category":"federal","status":"downloaded"},{"name":"NCES Common Core of Data (CCD)","org":"National Center for Education Statistics (NCES)","url":"https://nces.ed.gov/ccd/","what":"Comprehensive K-12 census data including high school graduate counts, enrollments by demographics, AP/IB course offerings, dropout rates, and school characteristics.","coverage":"100,000+ public schools and 13,000+ school districts; annual data from 1986-87 onward","format":"CSV","quality":8,"use":"Upstream K-12 data for building school-level features. AP/IB participation flags useful for institutional context.","category":"federal","status":"downloaded"},{"name":"NCES High School Longitudinal Study (HSLS:09)","org":"National Center for Education Statistics (NCES)","url":"https://nces.ed.gov/surveys/hsls09/","what":"Nationally representative cohort of 9th graders (2009) followed through college with data on algebra assessment, course-taking, GPA, SAT/ACT scores, college applications, enrollment, and persistence through 2021.","coverage":"~21,000 students in ~944 schools; multiple follow-up waves through 2021","format":"SAS, SPSS, Stata, CSV","quality":8,"use":"Rich longitudinal data linking high school behavior to college outcomes. Useful for feature engineering and understanding application behavior patterns.","category":"federal","status":"cataloged_only"},{"name":"NCES Education Longitudinal Study (ELS:2002)","org":"National Center for Education Statistics (NCES)","url":"https://nces.ed.gov/surveys/els2002/","what":"10th grade cohort (2002) followed through college with assessments, transcript data, SAT/ACT scores, college completion, and early earnings through 2012 follow-up.","coverage":"~16,000 students in ~752 schools; waves in 2002, 2004, 2006, 2012","format":"SAS, SPSS, Stata, CSV","quality":7,"use":"Historical HS-to-college pipeline data for early 2000s generation. Limited currency for contemporary admissions patterns.","category":"federal","status":"cataloged_only"},{"name":"NCES Beginning Postsecondary Students (BPS)","org":"National Center for Education Statistics (NCES)","url":"https://nces.ed.gov/surveys/bps/","what":"First-year postsecondary students tracked at end of year 1, year 3, and year 6 with data on persistence, degree attainment, major, financial aid, employment, and earnings.","coverage":"Multiple cohorts (BPS:90, :96, :04, :12, :20); samples of 16,000-25,000 per cohort","format":"SAS, SPSS, Stata, CSV","quality":8,"use":"Completion and persistence outcomes by enrollment institution type. No pre-enrollment data limiting direct admissions application.","category":"federal","status":"cataloged_only"},{"name":"NCES National Postsecondary Student Aid Study (NPSAS)","org":"National Center for Education Statistics (NCES)","url":"https://nces.ed.gov/surveys/npsas/","what":"Most detailed financial aid data available: all aid types, amounts, cost of attendance components, FAFSA status, and student demographics with cohorts spanning 1987-2020.","coverage":"85,000-120,000 students per wave; waves from 1987 to 2020 (~every 4 years)","format":"SAS, SPSS, Stata, CSV","quality":9,"use":"Financial aid distribution and net price analysis. Cross-sectional only; no admissions or test score data.","category":"federal","status":"cataloged_only"},{"name":"NCES Baccalaureate and Beyond (B&B)","org":"National Center for Education Statistics (NCES)","url":"https://nces.ed.gov/surveys/b&b/","what":"Bachelor's degree completers followed over time tracking graduate school enrollment, employment, earnings, loan repayment, and field of study outcomes.","coverage":"Multiple cohorts (B&B:93/97, :08/09, :16/17); most recent 2015-16 graduates","format":"SAS, SPSS, Stata","quality":7,"use":"Post-graduation earnings and debt detail. Limited pre-enrollment data.","category":"federal","status":"cataloged_only"},{"name":"NCES DataLab","org":"National Center for Education Statistics (NCES)","url":"https://nces.ed.gov/datalab/","what":"Online portal for analyzing and downloading public-use microdata from NPSAS, BPS, B&B, ELS:2002, HSLS:09, and other longitudinal studies with PowerStats for custom cross-tabulations.","coverage":"All major NCES longitudinal surveys and studies","format":"Online tool with CSV/Excel export","quality":8,"use":"Programmatic interface to NCES microdata. Suppression rules allow analysis of sensitive variables without direct record access.","category":"federal","status":"cataloged_only"},{"name":"Federal Student Aid (FSA) Data Center","org":"U.S. Department of Education","url":"https://studentaid.gov/data-center","what":"Federal financial aid volumes (Pell, loans, work-study), 3-year cohort default rates (CDR), Title IV participation status, and repayment data at institution level.","coverage":"All ~6,700 Title IV participating institutions; annual data with quarterly updates","format":"Excel, CSV, some data.ed.gov API","quality":7,"use":"Institution-level aid volume and CDR as proxy for financial health. Aggregate only; not broken down by applicant characteristics.","category":"federal","status":"cataloged_only"},{"name":"Civil Rights Data Collection (CRDC)","org":"U.S. Department of Education, Office for Civil Rights","url":"https://ocrdata.ed.gov/","what":"School-level data on AP/IB course offerings and enrollment, AP exam participation by demographics, graduation rates, enrollment by race/ethnicity, and civil rights compliance metrics.","coverage":"~96,000 public schools (complete census); biennial collection from 2011-12 onward","format":"CSV and SAS","quality":8,"use":"School-level AP/IB access and participation by demographic group. Critical for equity analysis. Not annual; AP enrollment but not scores.","category":"federal","status":"downloaded"},{"name":"National Student Clearinghouse Research Center","org":"National Student Clearinghouse (nonprofit)","url":"https://nscresearchcenter.org/","what":"Public aggregate reports on college-going rates, enrollment trends, persistence rates, completion rates, and enrollment estimates by sector, credential type, and demographics.","coverage":"~3,600 colleges (~97% of all US enrolled students); data from ~2003 onward","format":"Excel, PDF, interactive dashboards","quality":6,"use":"College-going rates and institutional enrollment benchmarks. Public data is aggregate only; paid StudentTracker provides individual-level tracking.","category":"federal","status":"cataloged_only"},{"name":"US Census Bureau - American Community Survey (ACS)","org":"US Census Bureau","url":"https://www.census.gov/programs-surveys/acs/data.html","what":"Demographic and socioeconomic data including college enrollment by type/age/race, educational attainment, earnings by field, household income, and poverty rates.","coverage":"All US geographies; 1-year data for 65K+ population areas, 5-year rolling for all geographies; annual from 2005 onward","format":"CSV/Excel via data.census.gov, JSON via Census API","quality":8,"use":"Community-level socioeconomic context for schools and colleges. Survey estimates at aggregate level; no institution-specific data.","category":"federal","status":"cataloged_only"},{"name":"US Census Bureau - Current Population Survey (CPS)","org":"US Census Bureau / Bureau of Labor Statistics","url":"https://www.census.gov/programs-surveys/cps.html","what":"Monthly household survey with October Supplement data on school enrollment, college enrollment by type, educational attainment, and college-going rates for recent HS graduates.","coverage":"National and limited state-level; monthly basic data plus October Supplement from 1968 onward","format":"CSV microdata, Census Microdata API","quality":7,"use":"Annual college enrollment rate benchmarks. Small sample sizes limit subgroup analysis. No institution-level data.","category":"federal","status":"cataloged_only"},{"name":"BLS National Longitudinal Surveys of Youth (NLSY97)","org":"Bureau of Labor Statistics","url":"https://www.bls.gov/nls/nlsy97.htm","what":"Nationally representative cohort born 1980-1984, tracked from 1997 to present with data on HS GPA, SAT/ACT, AP/vocational course-taking, college enrollment/persistence, major, and employment/earnings.","coverage":"~9,000 individuals; biennial interviews from 1997 to present","format":"ASCII, SAS, SPSS, Stata, CSV","quality":8,"use":"Rich longitudinal individual data on HS→college→work pathway. Contemporary for early 2000s; aging for current patterns.","category":"federal","status":"cataloged_only"},{"name":"College Board SAT Suite Annual Reports","org":"College Board","url":"https://reports.collegeboard.org/sat-suite-program-results","what":"State and national SAT participation rates, mean scores (total, EBRW, Math), score distributions, demographic breakdowns by race/ethnicity and gender, and college readiness benchmarks.","coverage":"All 50 states + DC + PR + USVI; annual from 2016 (redesigned SAT) onward; archive to earlier years","format":"PDF","quality":6,"use":"State-level SAT participation and score distributions. Not machine-readable; no school-level public data. Scores reflect graduating class, not admitted to specific institutions.","category":"federal","status":"cataloged_only"},{"name":"College Board AP Program Results","org":"College Board","url":"https://apcentral.collegeboard.org/about-ap/ap-data-research","what":"National and state AP participation rates, score distributions (% earning each score 1-5), mean scores by subject, demographic breakdowns, and AP course access indicators.","coverage":"All 50 states + DC; subject-level data for ~40 AP exams; annual from ~2003 onward","format":"Excel, PDF","quality":7,"use":"State-level AP participation and score distributions. Excellent for state context. School-level data is not publicly available in bulk.","category":"federal","status":"downloaded"},{"name":"ACT Graduating Class Database","org":"ACT Inc.","url":"https://www.act.org/content/act/en/research/services-and-resources/data-and-visualization/grad-class-database-2024.html","what":"State-level ACT scores (composite, sections), participation rates, % meeting college readiness benchmarks, demographic breakdowns, and multi-year trends.","coverage":"All 50 states; annual from ~2014 onward; interactive dashboard interface","format":"Tableau dashboard (not CSV bulk download), PDF reports","quality":6,"use":"State-level ACT participation and benchmarks. Participation bias in non-mandate states. No bulk CSV export.","category":"federal","status":"cataloged_only"},{"name":"International Baccalaureate (IB) Statistical Bulletins","org":"International Baccalaureate Organization","url":"https://ibo.org/about-the-ib/facts-and-figures/statistical-bulletins/","what":"Global and country-level data on IB DP/CP candidates, % earning diploma, mean scores, score distributions by grade and subject, and pass rates by level.","coverage":"Worldwide including US; biannual (May and November sessions); annual bulletins from ~2010 onward","format":"PDF, Power BI dashboards","quality":5,"use":"Global IB participation and score context. Limited US school-level data. Not machine-readable; small scale relative to AP.","category":"federal","status":"cataloged_only"},{"name":"NSF/NCSES SESTAT","org":"National Science Foundation, National Center for Science and Engineering Statistics","url":"https://ncses.nsf.gov/explore-data/microdata/scientists-and-engineers-statistical-data-system","what":"Integrated longitudinal system tracking education and employment of STEM professionals with data on degree field, institution, occupation, salary, and demographics.","coverage":"College-educated STEM workforce; surveys initiated 1993; microdata from 1993 onward","format":"SAS, CSV","quality":6,"use":"STEM career outcomes and workforce tracking. Limited direct admissions relevance. Excellent for STEM-specific institution characterization.","category":"federal","status":"cataloged_only"},{"name":"NSF/NCSES HERD Survey","org":"National Science Foundation, National Center for Science and Engineering Statistics","url":"https://ncses.nsf.gov/surveys/higher-education-research-development/2024","what":"R&D expenditures by institution, source of funds, field of science and engineering, and character of work at US higher education institutions.","coverage":"~925 institutions with $150K+ in R&D; annual from FY1972 onward; public microdata from FY2010","format":"SAS, CSV","quality":5,"use":"Research intensity characterization for institutions. Secondary use for identifying R1/R2 universities.","category":"federal","status":"cataloged_only"},{"name":"ERIC - Education Resources Information Center","org":"Institute of Education Sciences, U.S. Department of Education","url":"https://eric.ed.gov/","what":"Bibliographic database of 1.6M+ education research records with 450,000+ full-text documents; literature database not raw statistics source.","coverage":"Education research from 1966 to present","format":"API (JSON), PDF full-text","quality":3,"use":"Literature and policy research discovery. Not a statistical data source. Useful for contextualizing admissions research.","category":"federal","status":"cataloged_only"},{"name":"Statewide Longitudinal Data Systems (SLDS) - State-Level","org":"Various state education agencies (NCES-funded program)","url":"https://nces.ed.gov/Programs/SLDS/","what":"State-level P-20W (preschool through workforce) linked databases with K-12 records, transcripts, standardized test scores, high school completion, postsecondary enrollment/persistence, and workforce earnings.","coverage":"All 50 states with varying public data access; individual-level data restricted by FERPA","format":"Varies by state (dashboards, downloadable files, restricted microdata)","quality":7,"use":"Most powerful state-level source for HS→college→workforce linkage. Access varies dramatically; few states release microdata publicly.","category":"federal","status":"cataloged_only"},{"name":"IRS Form 990 - Nonprofit College Data","org":"Internal Revenue Service","url":"https://www.irs.gov/charities-non-profits/tax-exempt-organization-search","what":"Financial data from all nonprofit (501(c)(3)) colleges including revenue, expenses, endowment, executive compensation, and program activities.","coverage":"All nonprofit colleges; available from ~2001 via ProPublica; machine-readable XML from 2012 onward","format":"PDF (all years), XML machine-readable (2012+)","quality":5,"use":"Financial transparency and endowment data supplementing IPEDS. Secondary use for institutional context.","category":"federal","status":"cataloged_only"},{"name":"Opportunity Insights Mobility Report Cards","org":"Opportunity Insights (Harvard University research institute)","url":"https://opportunityinsights.org/data/","what":"College-level income mobility rates, access rates by parental income, parent and child income distributions, economic connectedness measures, and innovation/entrepreneur outcomes.","coverage":"~2,200 institutions for mobility data; cohorts born 1980-1991","format":"CSV and Stata (.dta)","quality":10,"use":"Unique income-mobility data unavailable elsewhere, derived from IRS records. Gold standard for socioeconomic access analysis.","category":"federal","status":"downloaded"},{"name":"Opportunity Insights College Admissions Research Dataset","org":"Opportunity Insights (Harvard University research institute)","url":"https://opportunityinsights.org/paper/collegeadmissions/","what":"Admission rates by parental income percentile × test score, matriculation rates conditional on admission, parental income distributions, and earnings at age 32-34.","coverage":"139 selective American colleges; cohorts entering ~1998-2015","format":"CSV and Stata","quality":10,"use":"Most granular income-by-admissions dataset ever published. Reveals income-based admissions bias independent of test scores.","category":"federal","status":"downloaded"},{"name":"Social Capital by College","org":"Opportunity Insights / Meta","url":"https://socialcapital.org","what":"Economic connectedness (share of low-SES students with high-SES friends), cross-SES exposure rates, friending bias, cohesiveness, and civic engagement measures by college.","coverage":"All US colleges with sufficient data","format":"CSV","quality":9,"use":"Unique measure of cross-SES social network diversity. Differentiating feature for holistic college comparison.","category":"federal","status":"cataloged_only"},{"name":"Urban Institute Education Data Portal / API","org":"Urban Institute (research organization)","url":"https://educationdata.urban.org/","what":"Unified REST API and portal harmonizing IPEDS, College Scorecard, Common Core of Data (CCD), Civil Rights Data Collection (CRDC), and EDFacts into single consistent interface.","coverage":"Harmonized data from IPEDS (1980-2023), College Scorecard, CCD, CRDC; institutional and K-12 levels","format":"JSON API, R package (educationdata), Stata package, CSV codebooks","quality":8,"use":"Easiest programmatic access to combined federal education data. Recommended as primary API endpoint over direct IPEDS downloads.","category":"federal","status":"cataloged_only"},{"name":"Common Data Set Initiative","org":"Collaborative (College Board, U.S. News & World Report, Peterson's)","url":"https://commondataset.org/","what":"Standardized self-reported institutional data including admissions (acceptance rate, SAT/ACT ranges, GPA distribution, admissions factors weighting), enrollment, expenses, financial aid, and academic offerings.","coverage":"4,000+ institutions; annual participation voluntary; each school publishes on own website","format":"PDF or HTML per institution (no central bulk download)","quality":8,"use":"Most detailed admissions profile per institution. Critical gap: no centralized download. Requires school-by-school scraping of PDFs.","category":"federal","status":"cataloged_only"},{"name":"UC System Information Center","org":"University of California","url":"https://www.universityofcalifornia.edu/about-us/information-center","what":"UC applicant counts, admits, enrollees by campus/major/residency/race; GPA and SAT/ACT of admitted students; trend data by admission round and school source.","coverage":"All 10 UC campuses; data from ~2001-2010 onward","format":"Interactive tables (CSV downloadable), PDF reports","quality":8,"use":"Institution-specific California public data. Useful for UC-specific admissions profile trends.","category":"federal","status":"cataloged_only"},{"name":"California Community Colleges Data Mart","org":"California Community Colleges Chancellor's Office","url":"https://datamart.cccco.edu/","what":"Enrollment by college/program/demographics, student success metrics (retention, completion, transfer rates), and transfer data to UC and CSU systems.","coverage":"All California community colleges; annual data","format":"Online tool with downloadable tables","quality":7,"use":"California community college enrollment and completion context. Transfer to 4-year data bridges CC-to-university pathway.","category":"federal","status":"cataloged_only"},{"name":"California Department of Education DataQuest","org":"California Department of Education","url":"https://www.cde.ca.gov/ds/","what":"College-Going Rate (% of HS graduates enrolling in college within 12/16 months), disaggregated by race/ethnicity, gender, ELL, income; plus AP enrollment, HS graduation rates, CAASPP test scores.","coverage":"All California public schools and districts; annual data","format":"CSV downloadable files, online query tool","quality":8,"use":"Exceptionally valuable California-specific college-going rate data by school. High-quality disaggregated metrics.","category":"federal","status":"cataloged_only"},{"name":"New York State Education Department (NYSED) Higher Education Data","org":"New York State Education Department","url":"https://www.nysed.gov/information-reporting-services/higher-education-reports","what":"Fall enrollment by institution by gender, race/ethnicity; sector breakdowns (SUNY, CUNY, Independent, Proprietary); admissions and academic preparation data.","coverage":"All New York higher education institutions; annual data from 2013-2023","format":"Online tables, CSV download","quality":7,"use":"New York state higher education enrollment context. Limited admissions detail.","category":"federal","status":"cataloged_only"},{"name":"CUNY Institutional Research Data Book","org":"City University of New York","url":"https://www.cuny.edu/irdatabook/","what":"Census headcount and FTE enrollment by college/term, degrees by level/field, retention and graduation rates, enrollment trends back to Fall 1990.","coverage":"All CUNY campuses; annual data from 1990 onward","format":"PDF, Excel workbooks, NY Open Data portal (CSV/API)","quality":7,"use":"New York public system enrollment and completion data.","category":"federal","status":"cataloged_only"},{"name":"SUNY Admissions Summary","org":"State University of New York","url":"https://www.suny.edu/about/fast-facts/","what":"HS GPA of admitted students by campus, EOP admissions data, enrollment by campus, annual admissions summary.","coverage":"All SUNY campuses; annual","format":"PDF, limited Excel","quality":7,"use":"SUNY-specific admissions profile. Limited institutional detail.","category":"federal","status":"cataloged_only"},{"name":"Texas Higher Education Coordinating Board (THECB) DataBridge","org":"Texas Higher Education Coordinating Board","url":"https://databridge.highered.texas.gov/","what":"Fall enrollment by institution/program/level/race/ethnicity/gender, degree completions, transfer data, accountability metrics, college-going rates, and enrollment forecasts.","coverage":"All Texas public higher education institutions; annual data going back decades","format":"Interactive dashboards with download options, Excel","quality":7,"use":"Texas state enrollment and completion context. Interactive dashboards with export capability.","category":"federal","status":"cataloged_only"},{"name":"Florida Board of Governors Dashboard","org":"Florida Board of Governors (State University System)","url":"https://www.flbog.edu/resources/data-analytics/dashboards/","what":"Headcount enrollment by student type/institution, baccalaureate graduate outcomes (employment, earnings, continuing education), admissions data for SUS campuses.","coverage":"All Florida public higher education institutions; annual data","format":"Interactive dashboards, archived PDFs","quality":7,"use":"Florida state enrollment and graduate outcomes.","category":"federal","status":"cataloged_only"},{"name":"Virginia Council of Higher Education (SCHEV) Research Portal","org":"State Council of Higher Education for Virginia","url":"https://research.schev.edu/","what":"First-time freshman profiles (GPA, SAT/ACT by institution), admissions by student level/locality, longitudinal admissions history, enrollment, completion rates, and projections.","coverage":"All Virginia higher education institutions; annual data","format":"Online reports, Excel download","quality":8,"use":"Virginia has unusually detailed and accessible institution-level admissions profile data.","category":"federal","status":"cataloged_only"},{"name":"Illinois Board of Higher Education (IBHE) Enrollment Tool","org":"Illinois Board of Higher Education","url":"https://enrollmentsdegrees.ibhe.org/Search.aspx","what":"Illinois Higher Education Information System (IHEIS): enrollment by institution/program/level/race/ethnicity/gender, degree completion data, long-term trends.","coverage":"All Illinois higher education institutions; annual data","format":"Online search tool with export, Excel, PDF","quality":7,"use":"Illinois state enrollment context.","category":"federal","status":"cataloged_only"},{"name":"Georgia Governor's Office of Student Achievement (GOSA)","org":"Governor's Office of Student Achievement","url":"https://gosa.georgia.gov/","what":"CCRPI (composite school accountability score), AP participation by school/district, SAT/ACT participation and mean scores by school, graduation rates, high school graduate outcomes by school.","coverage":"All Georgia schools and districts; downloadable CSV/Excel","format":"Excel/CSV downloadable files","quality":8,"use":"One of most accessible and well-organized state portals. Machine-readable AP and test score data at school level.","category":"federal","status":"cataloged_only"},{"name":"Minnesota SLEDS - P-20 Partnership","org":"Minnesota Office of Higher Education / Minnesota Department of Education / Minnesota Department of Employment and Economic Development","url":"https://sleds.mn.gov/","what":"High school graduates' postsecondary enrollment rates, completion rates, developmental education rates, employment and wages after graduation, disaggregated by demographics.","coverage":"Minnesota K-12 and postsecondary; aggregate public dashboard; 2018-2019 HS/college graduates","format":"Interactive dashboard, downloadable tables","quality":7,"use":"Minnesota state P-20 pathway data. Public dashboard; individual-level data restricted.","category":"federal","status":"cataloged_only"},{"name":"Washington Student Achievement Council (WSAC)","org":"Washington Student Achievement Council","url":"https://wsac.wa.gov/","what":"Strategic Action Plan Dashboard with affordability, enrollment, completion, student support KPIs; FAFSA completion rates by HS; college enrollment and completion rates.","coverage":"Washington state; annual data","format":"Interactive dashboards","quality":6,"use":"Washington state enrollment and completion context. Public aggregate dashboard; researcher microdata requires ERDC agreement.","category":"federal","status":"cataloged_only"},{"name":"College Transitions CDS Repository","org":"College Transitions (private admissions consulting company)","url":"https://www.collegetransitions.com/dataverse/common-data-set-repository/","what":"7 years of Common Data Set data (2018-19 through 2024-25) for hundreds of institutions in searchable web-based tables.","coverage":"~300 institutions, 7 years of CDS data","format":"Web-based searchable tables","quality":7,"use":"CDS aggregation across years enables trend analysis. Web-only interface limits bulk download utility.","category":"nonprofit","status":"cataloged_only"},{"name":"AdmitReport / The Data Room","org":"AdmitReport (private edtech)","url":"https://admitreport.com/common-data-set","what":"Web tables showing how 19 admissions criteria are weighted (Very Important/Important/Considered/Not Considered) per school across selective institutions.","coverage":"~27+ confirmed selective institutions","format":"Searchable web tables","quality":6,"use":"Quick reference for factor weighting comparisons. Limited scale and no bulk export.","category":"nonprofit","status":"cataloged_only"},{"name":"College Board AP Program Results","org":"College Board","url":"https://apstudents.collegeboard.org/about-ap-scores/score-distributions","what":"Score distributions (% earning 1-5 per subject), participation data (1956-2025), AP availability by state, national/state data by race/ethnicity and gender.","coverage":"Score distributions 2005-2025; participation 1956-2025; annual","format":"PDF and Excel (.xlsx)","quality":9,"use":"Excellent multi-format, excellent historical depth. Excel files ready for direct ingestion.","category":"nonprofit","status":"downloaded"},{"name":"Urban Institute Education Data Explorer API","org":"Urban Institute (nonprofit research organization)","url":"https://educationdata.urban.org/","what":"REST API wrapper combining IPEDS, College Scorecard, Civil Rights Data Collection (CRDC), and Common Core of Data (CCD) with clean harmonized interface.","coverage":"All IPEDS institutions and schools; annual data","format":"REST API (JSON), R package (educationdata), Stata module, Excel downloads","quality":9,"use":"Most developer-friendly way to access IPEDS data. Recommended as primary API endpoint over direct IPEDS downloads.","category":"nonprofit","status":"cataloged_only"},{"name":"College Scorecard Department of Education","org":"U.S. Department of Education (Listed separately as nonprofit access point)","url":"https://collegescorecard.ed.gov/data/api/","what":"College Scorecard API providing institution-level admissions, enrollment, completion, and earnings data via JSON REST interface.","coverage":"~6,900 institutions; data from 1996-97 onward","format":"JSON REST API","quality":9,"use":"Free API for programmatic access to acceptance rates and SAT/ACT ranges. Limitation: ADM_RATE suppressed for cohorts < 30.","category":"nonprofit","status":"cataloged_only"},{"name":"Common App Annual Reports","org":"Common Application, Inc. (nonprofit)","url":"https://www.commonapp.org/about/reports-and-insights/","what":"End-of-season PDF reports and deadline updates on total applicants, applications, demographic breakdowns (race/ethnicity, first-gen, Pell-eligible), test score submission rates, and international applicants.","coverage":"1,097+ member institutions; aggregated applicant data","format":"PDF reports (free), no raw data files","quality":7,"use":"Excellent trend data on application volume and demographics. Highly aggregated; no institution-level breakdown in public reports.","category":"nonprofit","status":"cataloged_only"},{"name":"NACAC State of College Admission Report","org":"NACAC (National Association for College Admission Counseling)","url":"https://www.nacacnet.org/state-of-college-admission-report/","what":"Survey of 4-year colleges on admission factors weighting (15+ factors), acceptance rates, yield rates, recruitment strategies, early decision/action trends, and high school counselor caseloads.","coverage":"Nonprofit 4-year colleges; annual survey; continuously-updated online dashboard since 2023","format":"Online dashboard (members); PDF fact sheets (some public); historical PDFs (2019+)","quality":8,"use":"Longitudinal trend data on how colleges weight admissions factors. Full dashboards member-only; free PDFs available.","category":"nonprofit","status":"cataloged_only"},{"name":"HERI / CIRP Freshman Survey (UCLA)","org":"Higher Education Research Institute (HERI), UCLA","url":"https://heri.ucla.edu/cirp-freshman-survey/","what":"National and institution-specific survey data on student background (parental education, family income, HS preparation), college aspirations, expectations, concerns about financing, and characteristics.","coverage":"~24,000+ students at ~55 institutions (2024); surveys since 1966","format":"Institutional reports (paid participation), national summary reports (free PDF)","quality":8,"use":"Longitudinal depth (since 1966). Useful for applicant mindset patterns. Raw data institutional-only.","category":"nonprofit","status":"cataloged_only"},{"name":"Harvard Dataverse","org":"Harvard Library","url":"https://dataverse.harvard.edu/","what":"Repository of 75,000+ datasets and 350,000+ files covering all disciplines including education research replication data and Opportunity Insights datasets.","coverage":"75,000+ datasets open to all researchers","format":"Varies by dataset (CSV, Stata, R, Excel, etc.)","quality":8,"use":"Secondary source. Most relevant datasets (Opportunity Insights) already directly accessible. Check for admissions replication data.","category":"nonprofit","status":"cataloged_only"},{"name":"CollegeData Admissions Tracker","org":"CollegeData (private, crowdsourced platform)","url":"https://www.collegedata.com/college-tools/admissions-tracker","what":"Crowdsourced student profiles with GPA, SAT/ACT, extracurriculars, leadership, awards, legacy status, athlete status, application outcomes, financial aid, and FAFSA EFC.","coverage":"2,600+ colleges; thousands of self-reported student profiles accumulated over many years; profiles date back ~2010","format":"Scrapable HTML (no public API)","quality":5,"use":"Rich structured profiles with financial aid data. Self-reported, unverified. Over-represents motivated, tech-savvy applicants.","category":"crowdsourced","status":"cataloged_only"},{"name":"Niche.com College Data","org":"Niche (private company)","url":"https://www.niche.com/colleges/","what":"College profiles with Niche grades (A+ to F), acceptance rates, SAT/ACT ranges, GPA, enrollment, tuition, financial aid, diversity, student reviews, popular majors, and admissions calculator.","coverage":"4,000+ colleges; K-12 coverage of 125,000+ institutions","format":"Scrapable HTML (robots.txt blocks scraping; Apify actor exists)","quality":7,"use":"IPEDS-sourced stats reliable; reviews crowdsourced. Explicitly prohibited by robots.txt.","category":"crowdsourced","status":"cataloged_only"},{"name":"College Confidential Forums","org":"College Confidential (forum platform)","url":"https://talk.collegeconfidential.com/c/what-are-my-chances/634","what":"Thousands of 'Chance Me' threads where students post GPA, SAT/ACT, activities, target schools, and receive crowd-sourced admission chance estimates.","coverage":"All major US colleges; hundreds of thousands of threads since ~1997","format":"Discourse JSON API endpoints (accessible; /latest.json, /t/{topic_id}.json)","quality":3,"use":"High noise-to-signal ratio. Community sentiment valuable but not predictive. Semi-structured free text.","category":"crowdsourced","status":"cataloged_only"},{"name":"Reddit r/collegeresults","org":"Reddit (crowdsourced platform)","url":"https://www.reddit.com/r/collegeresults/","what":"Standardized template posts with GPA, SAT/ACT, demographics, hooks (URM/first-gen/athlete/legacy), intended major, extracurriculars, essays, and application outcomes per school.","coverage":"~69K members; thousands of posts per cycle; multiple admissions cycles","format":"ndjson via Academic Torrents archive (free download 2005-2024)","quality":5,"use":"Semi-structured template enables NLP extraction. Largest individual outcome dataset. 21-94% prediction accuracy achieved by researchers.","category":"crowdsourced","status":"downloaded"},{"name":"Reddit r/ApplyingToCollege","org":"Reddit (crowdsourced platform)","url":"https://www.reddit.com/r/ApplyingToCollege/","what":"General advice/discussion forum with flair-tagged posts; decision megathreads each cycle contain thousands of individual data points on outcomes.","coverage":"~488K members; much larger but less structured than r/collegeresults","format":"ndjson via Academic Torrents archive (free download 2005-2024)","quality":4,"use":"Less structured than r/collegeresults. Requires significant NLP extraction.","category":"crowdsourced","status":"downloaded"},{"name":"Naviance (via PowerSchool)","org":"PowerSchool (owns Naviance since 2021)","url":"https://www.naviance.com/","what":"School-specific historical scattergrams showing GPA/test score vs. application outcome (Accept/Deny/Waitlist) for students from that HS to specific colleges; SuperMatch search tool.","coverage":"3+ million students/year; 40%+ of US HS students have access; scattergrams have 15+ years of history","format":"Web app (behind school login); scattergrams are PNG images","quality":9,"use":"Most accurate real outcome signal, but locked behind institutional access. School-specific (not national aggregate). No public API.","category":"crowdsourced","status":"cataloged_only"},{"name":"PrepScholar College Pages","org":"PrepScholar (test prep company)","url":"https://www.prepscholar.com/sat/s/colleges/","what":"Institutional admissions stat pages with average SAT/ACT, 25th/75th percentiles by section, average GPA, acceptance rate, and historical trends.","coverage":"~1,000+ colleges; typically reflects most recent CDS cycle","format":"Scrapable HTML","quality":7,"use":"Peterson's-sourced data reliable. Robots.txt permissive for college pages. Underlying data is licensed from Peterson's.","category":"crowdsourced","status":"cataloged_only"},{"name":"CollegeSimply","org":"CollegeSimply (private platform)","url":"https://www.collegesimply.com/","what":"Admissions data (acceptance rate, SAT/ACT ranges, GPA), tuition, enrollment, graduation rate, student-to-faculty ratio, diversity, financial aid, application deadlines for 3,500+ colleges.","coverage":"3,500+ US colleges; IPEDS-sourced; Fall 2023 class data most recent","format":"Scrapable HTML","quality":8,"use":"IPEDS-derived = high reliability. 50+ data points. Acceptance chance calculator uses simplified model.","category":"crowdsourced","status":"cataloged_only"},{"name":"Parchment Cross-Admit Comparison Tool","org":"Parchment (transcript exchange and admissions tool platform)","url":"https://www.parchment.com/c/college/tools/college-cross-admit-comparison.php","what":"Revealed preference data showing which school students chose when admitted to both, with acceptance rates, yield rates, SAT/ACT ranges, and cross-admit selectivity index.","coverage":"Hundreds of colleges (best for T50); 765,689+ self-reported applications, 4,158,931+ acceptances","format":"Scrapable HTML","quality":6,"use":"Unique cross-admit data unavailable elsewhere. Self-reported but uniquely valuable for preference rankings.","category":"crowdsourced","status":"cataloged_only"},{"name":"High School Matriculation Lists","org":"Elite and competitive high schools (primary sources)","url":"Various school websites + Niche.com K-12 profiles + UC system public data + Illinois State Board of Education","what":"Multi-year college matriculation lists showing where graduates enrolled, often broken down by college name and enrollment counts.","coverage":"~1,000+ elite private schools; variable format and completeness","format":"HTML/PDF (heterogeneous); UC system and ISBE provide structured CSV/API","quality":7,"use":"Underutilized high-quality signal for HS→college pipeline. Requires school-by-school discovery and parsing.","category":"crowdsourced","status":"cataloged_only"},{"name":"US News Best Colleges Rankings","org":"US News (commercial publisher)","url":"https://www.usnews.com/best-colleges","what":"National rankings of ~1,500 schools with data on acceptance rate, average SAT/ACT, average GPA, tuition, enrollment, graduation rate, retention, financial aid, peer assessment score, and endowment.","coverage":"~1,500 schools; historical archive 1984-2024 via GitHub","format":"JavaScript-heavy site; GitHub CSV archive (frishberg) with historical data","quality":8,"use":"Institutionally reported data via US News surveys. Live site scraping legally gray; GitHub archives freely available and safe.","category":"crowdsourced","status":"cataloged_only"},{"name":"Princeton Review College Profiles","org":"The Princeton Review (test prep company)","url":"https://www.princetonreview.com/college-search","what":"Acceptance rates, SAT/ACT ranges, GPA averages, enrollment, tuition, student-to-faculty ratio, graduation rates, financial aid, and student survey ratings across ~385 'Best Colleges' list schools.","coverage":"~385 core schools in Best Colleges list; broader database of ~1,500 schools with sparser data","format":"Scrapable HTML","quality":7,"use":"Institutional stats sourced from CDS/institutional reporting. Student survey data unique. Limited to ~385 selective schools.","category":"crowdsourced","status":"cataloged_only"},{"name":"Decisions Radar","org":"Indie developer (Vercel-hosted)","url":"https://t20decisions.vercel.app/","what":"Real-time college decision tracker for T20 schools during decision season showing live accept/reject/waitlist counts submitted by students.","coverage":"T20 schools only; sparse data outside decision season","format":"Web app (Vercel backend, likely JSON API)","quality":3,"use":"Live pulse during decision season. No GPA/test scores. High selection bias. Data is thin outside decision days.","category":"crowdsourced","status":"cataloged_only"},{"name":"Unigo College Reviews","org":"Unigo (crowdsourced review platform)","url":"https://www.unigo.com/colleges","what":"650,000+ student reviews with ratings (Housing, Food, Class Size, Academics, Facilities, Safety, Social Life, Campus Beauty, Value) plus IPEDS-sourced stats (tuition, enrollment, acceptance rate, GPA, test scores).","coverage":"3,500+ colleges; 650,000+ reviews accumulated over many years","format":"Scrapable HTML","quality":5,"use":"Statistical data from IPEDS reliable. Reviews are qualitative and crowdsourced. Useful for sentiment analysis.","category":"crowdsourced","status":"cataloged_only"},{"name":"Appily (formerly Cappex)","org":"EAB (Educating at Better)","url":"https://www.appily.com/","what":"College profiles with acceptance rates, enrollment, tuition, test scores, financial aid; virtual tours; acceptance chance calculator; scholarship database (250,000 scholarships, $50M+ value).","coverage":"4,000+ colleges; largest free scholarship database","format":"HTML pages","quality":7,"use":"Admissions stats reliable (IPEDS source). EAB is major institutional player; scraping likely violates ToS.","category":"crowdsourced","status":"cataloged_only"},{"name":"AdmitSee","org":"AdmitSee (edtech platform)","url":"https://www.admitsee.com/","what":"Largest searchable database of college application files including essays (full text), extracurricular resumes, test scores, GPA, intended major, and mentor advice from students who got in.","coverage":"60,000+ successful college applications; 100,000+ active users; essays span multiple admissions cycles","format":"Web platform (login required for full access)","quality":7,"use":"Richest qualitative application material (essays, activities lists) available. Population skewed toward selective schools. Paid content.","category":"crowdsourced","status":"cataloged_only"},{"name":"CollegeVine","org":"CollegeVine (edtech platform)","url":"https://www.collegevine.com/","what":"Chancing engine (ML-powered, 75+ factors), peer essay review, college profile matching, and 5+ million student profiles in system; covers 600+ schools.","coverage":"5+ million student profiles; 600+ schools; chancing model trained on proprietary data","format":"Web platform (login required)","quality":8,"use":"Sophisticated chancing engine (75 factors). 5M+ profile base. Proprietary and locked; data sold to colleges.","category":"crowdsourced","status":"cataloged_only"},{"name":"CollegeAI API","org":"CollegeAI (commercial data company)","url":"https://collegeai.com/data","what":"Commercial JSON API aggregating ~300 college data fields from government datasets, college websites, and third-party providers; includes rankings, admissions stats, cost, demographics, and recommendation engine.","coverage":"All US colleges; 250,000 historical student profiles for recommendation engine","format":"JSON REST API (requires API key)","quality":8,"use":"Legitimate official API product. Pricing unknown; saves engineering vs. building scrapers. Most comprehensive college data API.","category":"crowdsourced","status":"cataloged_only"},{"name":"Compass Prep College Profiles","org":"Compass Education Group (test prep company)","url":"https://www.compassprep.com/college-profiles/","what":"Annually updated profiles of 400+ selective schools with testing policy (Required/Optional/Test-Free/Test-Blind), number of applicants, acceptance rate, and SAT/ACT 25th/75th percentiles.","coverage":"400+ schools (89% Fall 2023/2024 data); excellent test-optional policy tracking","format":"HTML tables (scrapable)","quality":8,"use":"Best free curated test-optional policy tracker. Carefully curated by experts. Single page easy to scrape.","category":"crowdsourced","status":"cataloged_only"},{"name":"Parchment Student Choice Rankings","org":"Parchment","url":"https://www.parchment.com/c/college/college-rankings.php","what":"Alternative ranking system based on cross-admit revealed preference data showing which schools students chose when admitted to multiple schools.","coverage":"~300 schools with sufficient cross-admit data","format":"Scrapable HTML table","quality":7,"use":"Unique methodology capturing actual student preference. Limited to schools with sufficient sample sizes.","category":"crowdsourced","status":"cataloged_only"},{"name":"TheGradCafe Graduate Admissions Survey","org":"TheGradCafe (crowdsourced platform, graduate-focused)","url":"https://www.thegradcafe.com/survey/","what":"Graduate admissions results tracker with 372,000+ entries since 2006 showing program, decision (Accept/Reject/Waitlist), GPA, GRE scores, and demographics.","coverage":"Graduate admissions only (not undergraduate); 372,000+ entries; multiple GitHub scrapers available","format":"Web-based survey form; active scrapers available","quality":5,"use":"Graduate-only; limited direct undergrad value. Methodology and data structure instructive for undergraduate data collection.","category":"crowdsourced","status":"cataloged_only"},{"name":"Academic Torrents - Reddit Pushshift Dumps","org":"Academic Torrents / u/RaiderBDev (third-party archive)","url":"https://academictorrents.com/details/3e3f64dee22dc304cdd2546254ca1f8e8ae542b4","what":"Pre-compiled archives of all Reddit submissions and comments for top 40,000 subreddits including r/collegeresults, r/ApplyingToCollege, r/gradadmissions (free zstandard-compressed ndjson download).","coverage":"2005-06 through December 2024; selective per-subreddit download available","format":"zstandard-compressed ndjson files","quality":5,"use":"Freely downloadable without Reddit API. Largest individual outcome dataset available. Legally gray for commercial use.","category":"crowdsourced","status":"downloaded"},{"name":"Road2College College Data Spreadsheet","org":"Road2College (private company)","url":"https://www.road2college.com/shop/college-data-tool/","what":"Paid spreadsheet tool combining IPEDS and CDS data; free website content with individual CDS pages for specific schools.","coverage":"Combines public sources; limited free content","format":"Excel tool (paid); web pages (free)","quality":7,"use":"Paid commercial product. Free content available but underlying data from public sources.","category":"crowdsourced","status":"cataloged_only"},{"name":"Peterson's Data API","org":"Peterson's (commercial data firm, 50+ years in higher education)","url":"https://petersonsdata.com/undergraduate-institutional-data/","what":"Commercial JSON API providing institutional data from ~4,200 two-year and four-year institutions (US, Canada, Mexico, international) with 31 data tables and hundreds of data points per institution.","coverage":"~4,200 institutions including international; sourced from CDS + institutional submissions + partner data","format":"JSON API","quality":9,"use":"Most comprehensive commercial database. Fills gaps in IPEDS (richer program-level data, international coverage). Cost may be prohibitive for MVP.","category":"crowdsourced","status":"cataloged_only"},{"name":"NCES Fast Facts / Digest of Education Statistics","org":"National Center for Education Statistics","url":"https://nces.ed.gov/fastfacts/","what":"National aggregate statistics on college enrollment trends, immediate transition to college rates by cohort, and historical acceptance rates table.","coverage":"National aggregates; historical trends","format":"Web tables, PDF reports, Excel spreadsheets","quality":8,"use":"Best for national context and historical trend data. Not institution-level.","category":"nonprofit","status":"cataloged_only"},{"name":"NCES College Navigator","org":"National Center for Education Statistics","url":"https://nces.ed.gov/collegenavigator/","what":"Web tool for individual school lookup with acceptance rates, SAT/ACT ranges, admissions considerations, open admissions flag, and export functionality.","coverage":"7,000+ institutions","format":"Web tool with export function","quality":8,"use":"Data sourced from IPEDS (use IPEDS or Urban Institute API for bulk access instead).","category":"nonprofit","status":"cataloged_only"}]</script>
+<script>
+(function(){
+  const data = JSON.parse(document.getElementById('sources-data').textContent);
+  const tbody = document.getElementById('sources-body');
+  const search = document.getElementById('src-search');
+  const countEl = document.getElementById('src-count');
+  let activeCat = 'all';
+  let activeStatus = 'all';
+
+  const catLabel = {federal:'Federal &amp; gov',nonprofit:'Nonprofit',crowdsourced:'Crowdsourced'};
+  const catClass = {federal:'pill-fed',nonprofit:'pill-non',crowdsourced:'pill-crowd'};
+
+  function render(){
+    const q = search.value.trim().toLowerCase();
+    let shown = 0;
+    const html = data.map(d=>{
+      const text = (d.name+' '+d.org+' '+d.what+' '+d.use).toLowerCase();
+      const catOk = activeCat==='all' || d.category===activeCat;
+      const statusOk = activeStatus==='all' || d.status===activeStatus;
+      const qOk = !q || text.indexOf(q) !== -1;
+      const visible = catOk && statusOk && qOk;
+      if(visible) shown++;
+      const url = d.url ? `<a href="${d.url}" target="_blank" rel="noopener">link</a>` : '';
+      const qual = d.quality !== null && d.quality !== undefined ? `<span class="pill pill-q">${d.quality}/10</span>` : '';
+      const downPill = d.status==='downloaded' ? `<span class="pill pill-down">downloaded</span>` : '';
+      const catPill = `<span class="pill ${catClass[d.category]||'pill-cat'}">${catLabel[d.category]||d.category}</span>`;
+      return `<tr class="source-row${visible?'':' hidden'}">
+        <td>
+          <div>${escapeHtml(d.name)}</div>
+          <div class="src-meta">${escapeHtml(d.org)}${url?' &middot; '+url:''}</div>
+          <div class="tag-row">${catPill}${downPill}</div>
+        </td>
+        <td>${escapeHtml(d.what)}${d.use?`<div class="src-meta" style="margin-top:6px"><strong>Use in Scholara:</strong> ${escapeHtml(d.use)}</div>`:''}</td>
+        <td>${escapeHtml(d.coverage||'')}</td>
+        <td>${escapeHtml(d.format||'')}</td>
+        <td>${qual}</td>
+      </tr>`;
+    }).join('');
+    tbody.innerHTML = html;
+    countEl.textContent = `Showing ${shown} of ${data.length}`;
+  }
+
+  function escapeHtml(s){
+    return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  document.querySelectorAll('.filter-cat').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('.filter-cat').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      activeCat = b.dataset.cat;
+      render();
+    });
+  });
+  document.querySelectorAll('.filter-status').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('.filter-status').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      activeStatus = b.dataset.status;
+      render();
+    });
+  });
+  search.addEventListener('input', render);
+  render();
+})();
+</script>
+
+<script>
+// Anonymized "methodology_viewed" event. Mirrors the React app's events.ts:
+// reads/sets the same scholara_pseudo_id and scholara_analytics_optout keys.
+(function(){
+  try {
+    if (localStorage.getItem('scholara_analytics_optout') === 'true') return;
+    var id = localStorage.getItem('scholara_pseudo_id');
+    if (!id) {
+      id = (crypto && crypto.randomUUID) ? crypto.randomUUID()
+           : 'ev-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      localStorage.setItem('scholara_pseudo_id', id);
+    }
+    fetch('/api/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      keepalive: true,
+      body: JSON.stringify({ events: [{
+        id: (crypto && crypto.randomUUID) ? crypto.randomUUID() : 'ev-' + Date.now(),
+        pseudonymous_id: id,
+        event_type: 'methodology_viewed',
+        payload: null,
+        app_version: '0.1.0-phase1',
+        client_timestamp: Date.now()
+      }]})
+    }).catch(function(){});
+  } catch(e){}
+})();
+</script>
+</body>
+</html>

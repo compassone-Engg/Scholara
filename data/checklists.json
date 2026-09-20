@@ -1,0 +1,900 @@
+{
+  "110653": {
+    "platform": "UC Application",
+    "platformUrl": "https://apply.universityofcalifornia.edu",
+    "deadlines": {
+      "filing_open": "2026-08-01",
+      "filing_close": "2026-11-30",
+      "sat_scores_due": "2026-12-31",
+      "fafsa_due": "2027-03-02",
+      "sir_due": "2027-05-01"
+    },
+    "tasks": [
+      {
+        "id": "uc-personal-info",
+        "title": "Complete Personal Information",
+        "category": "application",
+        "description": "Name, address, citizenship, parent info",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 30
+      },
+      {
+        "id": "uc-academic-history",
+        "title": "Enter Academic History",
+        "category": "application",
+        "description": "Every course from 9th-12th grade with grades. This is the most time-consuming section.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 120
+      },
+      {
+        "id": "uc-test-scores",
+        "title": "Report Test Scores (Optional)",
+        "category": "testing",
+        "description": "SAT/ACT scores are optional for UC. Self-report in app; official scores sent if admitted.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "uc-activities",
+        "title": "Activities & Awards (up to 20)",
+        "category": "activities",
+        "description": "List up to 20 activities, honors, awards, volunteer work, employment. Quality over quantity.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 90
+      },
+      {
+        "id": "uc-piq1",
+        "title": "Personal Insight Question #1",
+        "category": "essays",
+        "description": "350 words max. Pick from 8 prompts \u2014 choose the 4 that best showcase you.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 180
+      },
+      {
+        "id": "uc-piq2",
+        "title": "Personal Insight Question #2",
+        "category": "essays",
+        "description": "350 words max. Second of 4 required responses.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 180
+      },
+      {
+        "id": "uc-piq3",
+        "title": "Personal Insight Question #3",
+        "category": "essays",
+        "description": "350 words max. Third of 4 required responses.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 180
+      },
+      {
+        "id": "uc-piq4",
+        "title": "Personal Insight Question #4",
+        "category": "essays",
+        "description": "350 words max. Fourth of 4 required responses.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 180
+      },
+      {
+        "id": "uc-scholarship",
+        "title": "Complete Scholarship Section",
+        "category": "financial",
+        "description": "Review and apply for UC-specific scholarships within the application.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 30
+      },
+      {
+        "id": "uc-fee",
+        "title": "Pay Application Fee ($80)",
+        "category": "application",
+        "description": "$80 per UC campus. Fee waiver available if eligible.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 10
+      },
+      {
+        "id": "uc-review-submit",
+        "title": "Review & Submit Application",
+        "category": "application",
+        "description": "Proofread everything. You cannot make changes after submitting.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 60
+      },
+      {
+        "id": "uc-fafsa",
+        "title": "Submit FAFSA or CA Dream Act",
+        "category": "financial",
+        "description": "Required for financial aid consideration. Use UCI's school code.",
+        "dueDate": "2027-03-02",
+        "estimatedMinutes": 60
+      },
+      {
+        "id": "uc-sir",
+        "title": "Submit Statement of Intent to Register",
+        "category": "post-admission",
+        "description": "If admitted, commit to UCI by accepting the offer.",
+        "dueDate": "2027-05-01",
+        "estimatedMinutes": 15
+      }
+    ]
+  },
+  "211440": {
+    "platform": "Common Application",
+    "platformUrl": "https://www.commonapp.org",
+    "deadlines": {
+      "common_app_open": "2026-08-01",
+      "ed1": "2026-11-01",
+      "ed2": "2027-01-03",
+      "rd": "2027-01-03",
+      "css_profile": "2026-11-01",
+      "mid_year_report": "2027-02-15"
+    },
+    "tasks": [
+      {
+        "id": "ca-account",
+        "title": "Create Common App Account",
+        "category": "application",
+        "description": "Set up your account at commonapp.org. Opens August 1.",
+        "dueDate": "2026-08-01",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "ca-profile",
+        "title": "Complete Common App Profile",
+        "category": "application",
+        "description": "Demographics, family, education, testing, activities, honors.",
+        "dueDate": "2026-11-01",
+        "estimatedMinutes": 90
+      },
+      {
+        "id": "ca-essay",
+        "title": "Write Common App Personal Essay",
+        "category": "essays",
+        "description": "650 words max. Choose 1 of 7 prompts. This essay goes to ALL your Common App schools.",
+        "dueDate": "2026-11-01",
+        "estimatedMinutes": 300
+      },
+      {
+        "id": "cmu-why",
+        "title": "CMU Supplemental: \"Why CMU\" Essay",
+        "category": "essays",
+        "description": "Explain why Carnegie Mellon is a good fit. Be specific about programs, faculty, culture.",
+        "dueDate": "2026-11-01",
+        "estimatedMinutes": 180
+      },
+      {
+        "id": "cmu-school",
+        "title": "CMU Supplemental: School/College Essay",
+        "category": "essays",
+        "description": "Why this specific school within CMU (Engineering, SCS, Dietrich, etc.)?",
+        "dueDate": "2026-11-01",
+        "estimatedMinutes": 180
+      },
+      {
+        "id": "cmu-rec1",
+        "title": "Teacher Recommendation #1",
+        "category": "recommendations",
+        "description": "Ask a teacher who knows your work well. STEM teacher recommended for engineering/CS applicants.",
+        "dueDate": "2026-10-15",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "cmu-rec2",
+        "title": "Teacher Recommendation #2",
+        "category": "recommendations",
+        "description": "Second teacher recommendation. Choose a different subject area.",
+        "dueDate": "2026-10-15",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "cmu-counselor",
+        "title": "Counselor Recommendation & Transcript",
+        "category": "recommendations",
+        "description": "Meet with your counselor to request rec letter and official transcript.",
+        "dueDate": "2026-10-15",
+        "estimatedMinutes": 30
+      },
+      {
+        "id": "cmu-scores",
+        "title": "Submit Test Scores (Optional)",
+        "category": "testing",
+        "description": "CMU is test-optional. If submitting, send official SAT/ACT scores.",
+        "dueDate": "2026-11-01",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "cmu-fee",
+        "title": "Pay Application Fee ($75)",
+        "category": "application",
+        "description": "$75 fee. Fee waiver available through Common App.",
+        "dueDate": "2026-11-01",
+        "estimatedMinutes": 10
+      },
+      {
+        "id": "cmu-submit",
+        "title": "Review & Submit Application",
+        "category": "application",
+        "description": "Final review of Common App + CMU supplements. Submit before deadline.",
+        "dueDate": "2026-11-01",
+        "estimatedMinutes": 45
+      },
+      {
+        "id": "cmu-css",
+        "title": "Submit CSS Profile",
+        "category": "financial",
+        "description": "Required for CMU financial aid. More detailed than FAFSA.",
+        "dueDate": "2026-11-01",
+        "estimatedMinutes": 90
+      },
+      {
+        "id": "cmu-fafsa",
+        "title": "Submit FAFSA",
+        "category": "financial",
+        "description": "Federal financial aid form. Use CMU's school code.",
+        "dueDate": "2027-02-15",
+        "estimatedMinutes": 60
+      },
+      {
+        "id": "cmu-midyear",
+        "title": "Mid-Year School Report",
+        "category": "post-submission",
+        "description": "Your counselor sends updated grades. Follow up to make sure it's sent.",
+        "dueDate": "2027-02-15",
+        "estimatedMinutes": 15
+      }
+    ]
+  },
+  "common_app_template": {
+    "platform": "Common Application",
+    "platformUrl": "https://www.commonapp.org",
+    "deadlines": {
+      "ed1": "2026-11-01",
+      "ea": "2026-11-01",
+      "ed2": "2027-01-01",
+      "rd": "2027-01-01",
+      "fafsa_due": "2027-02-15",
+      "css_due": "2026-11-15"
+    },
+    "tasks": [
+      {
+        "id": "ca-account",
+        "title": "Create Common App Account",
+        "category": "application",
+        "description": "Sign up at commonapp.org and start your application.",
+        "dueDate": "2026-08-01",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "ca-profile",
+        "title": "Complete Common App Profile",
+        "category": "application",
+        "description": "Fill out personal info, family info, education, testing, activities, and writing sections.",
+        "dueDate": "2026-10-15",
+        "estimatedMinutes": 180
+      },
+      {
+        "id": "ca-essay",
+        "title": "Write Common App Personal Statement",
+        "category": "essays",
+        "description": "Choose one of the 7 prompts; aim for 500-650 words. Multiple drafts recommended.",
+        "dueDate": "2026-10-20",
+        "estimatedMinutes": 720
+      },
+      {
+        "id": "ca-supplements",
+        "title": "Complete School-Specific Supplements",
+        "category": "essays",
+        "description": "Most selective schools require 1-3 additional essays. Check each school's supplemental section in Common App.",
+        "dueDate": "2026-10-30",
+        "estimatedMinutes": 600
+      },
+      {
+        "id": "ca-rec1",
+        "title": "Teacher Recommendation #1",
+        "category": "recommendations",
+        "description": "Ask a teacher (ideally junior-year core academic) at least 4 weeks before deadlines. Provide them with your activities list.",
+        "dueDate": "2026-10-01",
+        "estimatedMinutes": 30
+      },
+      {
+        "id": "ca-rec2",
+        "title": "Teacher Recommendation #2",
+        "category": "recommendations",
+        "description": "Ask a second teacher in a different subject area when school requires two teacher recs.",
+        "dueDate": "2026-10-01",
+        "estimatedMinutes": 30
+      },
+      {
+        "id": "ca-counselor",
+        "title": "Counselor Recommendation & Transcript",
+        "category": "recommendations",
+        "description": "Request through your school's college counseling office. Allow 4-6 weeks.",
+        "dueDate": "2026-10-01",
+        "estimatedMinutes": 30
+      },
+      {
+        "id": "ca-scores",
+        "title": "Submit Test Scores (if submitting)",
+        "category": "testing",
+        "description": "Send official SAT or ACT scores via the testing agency. Most selective schools accept self-report initially with official scores at matriculation.",
+        "dueDate": "2026-10-15",
+        "estimatedMinutes": 20
+      },
+      {
+        "id": "ca-fee",
+        "title": "Pay Application Fee or Submit Waiver",
+        "category": "application",
+        "description": "Application fees range from $50-$90. Fee waivers available for eligible students.",
+        "dueDate": "2026-11-01",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "ca-submit",
+        "title": "Review & Submit Application",
+        "category": "application",
+        "description": "Triple-check spelling, dates, essay attribution, and that you've selected the right round (ED/EA/RD).",
+        "dueDate": "2026-11-01",
+        "estimatedMinutes": 60
+      },
+      {
+        "id": "ca-css",
+        "title": "Submit CSS Profile (if required)",
+        "category": "financial",
+        "description": "Required by ~200 selective schools for institutional aid. Different from FAFSA.",
+        "dueDate": "2026-11-15",
+        "estimatedMinutes": 90
+      },
+      {
+        "id": "ca-fafsa",
+        "title": "Submit FAFSA",
+        "category": "financial",
+        "description": "Free Application for Federal Student Aid. Required for federal aid; many schools require it for institutional aid.",
+        "dueDate": "2027-02-15",
+        "estimatedMinutes": 60
+      },
+      {
+        "id": "ca-midyear",
+        "title": "Mid-Year School Report",
+        "category": "post-submission",
+        "description": "Your school sends an updated transcript with first-semester senior grades.",
+        "dueDate": "2027-02-15",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "ca-final",
+        "title": "Final Transcript After Graduation",
+        "category": "post-admission",
+        "description": "Once you've enrolled, your high school sends a final transcript to your chosen college.",
+        "dueDate": "2027-06-30",
+        "estimatedMinutes": 5
+      }
+    ]
+  },
+  "uc_app_template": {
+    "platform": "UC Application",
+    "platformUrl": "https://apply.universityofcalifornia.edu",
+    "deadlines": {
+      "filing_open": "2026-08-01",
+      "filing_close": "2026-11-30",
+      "fafsa_due": "2027-03-02",
+      "sir_due": "2027-05-01"
+    },
+    "tasks": [
+      {
+        "id": "uc-personal-info",
+        "title": "Complete Personal Information",
+        "category": "application",
+        "description": "Account creation, basic info, residency.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 30
+      },
+      {
+        "id": "uc-academic-history",
+        "title": "Enter Academic History",
+        "category": "application",
+        "description": "All courses 9th-12th grade with grades. UC recalculates GPA.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 90
+      },
+      {
+        "id": "uc-test-scores",
+        "title": "Report Test Scores (Optional)",
+        "category": "testing",
+        "description": "UC is currently test-free for admissions but you can self-report scores; they may be used for course placement.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 20
+      },
+      {
+        "id": "uc-activities",
+        "title": "Activities & Awards (up to 20)",
+        "category": "activities",
+        "description": "Six categories: awards, EC activities, employment, educational prep, volunteer, courses outside high school. Be specific about hours and impact.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 180
+      },
+      {
+        "id": "uc-piq1",
+        "title": "Personal Insight Question #1",
+        "category": "essays",
+        "description": "Pick 4 of 8 PIQs; 350 words each. Prompt 1 is the same across all UCs.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 240
+      },
+      {
+        "id": "uc-piq2",
+        "title": "Personal Insight Question #2",
+        "category": "essays",
+        "description": "Different prompt; 350 words. Choose to highlight different aspects of yourself.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 240
+      },
+      {
+        "id": "uc-piq3",
+        "title": "Personal Insight Question #3",
+        "category": "essays",
+        "description": "Third PIQ; 350 words.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 240
+      },
+      {
+        "id": "uc-piq4",
+        "title": "Personal Insight Question #4",
+        "category": "essays",
+        "description": "Final PIQ; 350 words.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 240
+      },
+      {
+        "id": "uc-scholarship",
+        "title": "Complete Scholarship Section",
+        "category": "financial",
+        "description": "UC system-wide scholarship application embedded in the main app.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 30
+      },
+      {
+        "id": "uc-fee",
+        "title": "Pay Application Fee ($80 per campus)",
+        "category": "application",
+        "description": "$80 per UC campus you apply to. Fee waivers available.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "uc-review-submit",
+        "title": "Review & Submit Application",
+        "category": "application",
+        "description": "Final review of all sections. UC application is one app sent to multiple campuses.",
+        "dueDate": "2026-11-30",
+        "estimatedMinutes": 60
+      },
+      {
+        "id": "uc-fafsa",
+        "title": "Submit FAFSA or CA Dream Act",
+        "category": "financial",
+        "description": "Required for institutional aid at any UC.",
+        "dueDate": "2027-03-02",
+        "estimatedMinutes": 60
+      },
+      {
+        "id": "uc-sir",
+        "title": "Submit Statement of Intent to Register",
+        "category": "post-admission",
+        "description": "After admission decisions; choose your campus.",
+        "dueDate": "2027-05-01",
+        "estimatedMinutes": 15
+      }
+    ]
+  },
+  "csu_app_template": {
+    "platform": "Cal State Apply",
+    "platformUrl": "https://www.calstate.edu/apply",
+    "deadlines": {
+      "filing_open": "2026-10-01",
+      "filing_close": "2026-12-15",
+      "fafsa_due": "2027-03-02",
+      "sir_due": "2027-05-01"
+    },
+    "tasks": [
+      {
+        "id": "csu-account",
+        "title": "Create Cal State Apply Account",
+        "category": "application",
+        "description": "Sign up at calstate.edu/apply.",
+        "dueDate": "2026-10-15",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "csu-personal",
+        "title": "Complete Personal Information",
+        "category": "application",
+        "description": "Basic info, residency, contact.",
+        "dueDate": "2026-12-01",
+        "estimatedMinutes": 30
+      },
+      {
+        "id": "csu-academic",
+        "title": "Enter Academic History",
+        "category": "application",
+        "description": "Courses, grades. CSU uses A-G coursework; verify completion.",
+        "dueDate": "2026-12-01",
+        "estimatedMinutes": 90
+      },
+      {
+        "id": "csu-test-scores",
+        "title": "Report Test Scores (Optional)",
+        "category": "testing",
+        "description": "CSU is currently test-free for general admissions; some impacted majors may consider scores.",
+        "dueDate": "2026-12-15",
+        "estimatedMinutes": 20
+      },
+      {
+        "id": "csu-supplements",
+        "title": "Complete Major-Specific Supplements",
+        "category": "application",
+        "description": "Some impacted majors require additional info or essays. Check your campus + major page.",
+        "dueDate": "2026-12-15",
+        "estimatedMinutes": 60
+      },
+      {
+        "id": "csu-fee",
+        "title": "Pay Application Fee ($70 per campus)",
+        "category": "application",
+        "description": "$70 per CSU campus. Fee waivers available for eligible students.",
+        "dueDate": "2026-12-15",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "csu-submit",
+        "title": "Review & Submit Application",
+        "category": "application",
+        "description": "Final check before submission. CSU application is one app to multiple campuses.",
+        "dueDate": "2026-12-15",
+        "estimatedMinutes": 30
+      },
+      {
+        "id": "csu-fafsa",
+        "title": "Submit FAFSA or CA Dream Act",
+        "category": "financial",
+        "description": "Required for state and federal aid at any CSU.",
+        "dueDate": "2027-03-02",
+        "estimatedMinutes": 60
+      },
+      {
+        "id": "csu-sir",
+        "title": "Submit Statement of Intent to Register",
+        "category": "post-admission",
+        "description": "After admission; commit to your campus by May 1.",
+        "dueDate": "2027-05-01",
+        "estimatedMinutes": 15
+      }
+    ]
+  },
+  "mit_app_template": {
+    "platform": "MIT Apply",
+    "platformUrl": "https://apply.mitadmissions.org",
+    "deadlines": {
+      "ea": "2026-11-01",
+      "rd": "2027-01-01",
+      "fafsa_due": "2027-02-15"
+    },
+    "tasks": [
+      {
+        "id": "mit-account",
+        "title": "Create MIT Application Account",
+        "category": "application",
+        "description": "MIT uses its own application portal, not Common App.",
+        "dueDate": "2026-09-01",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "mit-bio",
+        "title": "Complete Biographical & Family Info",
+        "category": "application",
+        "description": "Personal info, family background, parental education.",
+        "dueDate": "2026-10-15",
+        "estimatedMinutes": 30
+      },
+      {
+        "id": "mit-academics",
+        "title": "Enter Academic History & Self-Reported Coursework",
+        "category": "application",
+        "description": "Courses 9-12, grades, school context.",
+        "dueDate": "2026-10-15",
+        "estimatedMinutes": 60
+      },
+      {
+        "id": "mit-activities",
+        "title": "Activities & Work Experience (4 entries)",
+        "category": "activities",
+        "description": "MIT limits activities; quality and depth matter most.",
+        "dueDate": "2026-10-20",
+        "estimatedMinutes": 120
+      },
+      {
+        "id": "mit-essays",
+        "title": "Write 5 Short-Answer Essays",
+        "category": "essays",
+        "description": "Each 100-225 words. Prompts about background, community, problem-solving, fun activities, and challenges.",
+        "dueDate": "2026-10-25",
+        "estimatedMinutes": 600
+      },
+      {
+        "id": "mit-rec-counselor",
+        "title": "Counselor Statement",
+        "category": "recommendations",
+        "description": "Request through your school's counseling office.",
+        "dueDate": "2026-10-01",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "mit-rec-math-sci",
+        "title": "Math/Science Teacher Recommendation",
+        "category": "recommendations",
+        "description": "Required: one teacher of math or science.",
+        "dueDate": "2026-10-01",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "mit-rec-humanities",
+        "title": "Humanities/Social Sciences Teacher Recommendation",
+        "category": "recommendations",
+        "description": "Required: one teacher of humanities, social sciences, or language.",
+        "dueDate": "2026-10-01",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "mit-scores",
+        "title": "Submit SAT or ACT Scores (Required)",
+        "category": "testing",
+        "description": "MIT requires either SAT or ACT for the 2026-27 cycle.",
+        "dueDate": "2026-10-31",
+        "estimatedMinutes": 20
+      },
+      {
+        "id": "mit-interview",
+        "title": "Educational Counselor Interview (Optional)",
+        "category": "application",
+        "description": "Optional alumni interview if available in your area; encouraged.",
+        "dueDate": "2026-10-31",
+        "estimatedMinutes": 60
+      },
+      {
+        "id": "mit-fee",
+        "title": "Pay $85 Application Fee or Waiver",
+        "category": "application",
+        "description": "Fee waivers available; ask via the application.",
+        "dueDate": "2026-11-01",
+        "estimatedMinutes": 10
+      },
+      {
+        "id": "mit-submit",
+        "title": "Submit Application",
+        "category": "application",
+        "description": "EA: Nov 1. RD: Jan 1.",
+        "dueDate": "2026-11-01",
+        "estimatedMinutes": 30
+      },
+      {
+        "id": "mit-css",
+        "title": "Submit CSS Profile",
+        "category": "financial",
+        "description": "Required for institutional aid at MIT.",
+        "dueDate": "2026-11-15",
+        "estimatedMinutes": 90
+      },
+      {
+        "id": "mit-fafsa",
+        "title": "Submit FAFSA",
+        "category": "financial",
+        "description": "Required for federal aid.",
+        "dueDate": "2027-02-15",
+        "estimatedMinutes": 60
+      }
+    ]
+  },
+  "caltech_app_template": {
+    "platform": "Caltech Application",
+    "platformUrl": "https://www.admissions.caltech.edu",
+    "deadlines": {
+      "ea": "2026-11-01",
+      "rd": "2027-01-03",
+      "fafsa_due": "2027-02-15"
+    },
+    "tasks": [
+      {
+        "id": "cit-account",
+        "title": "Start Caltech Application",
+        "category": "application",
+        "description": "Caltech uses its own portal (or Common App, depending on year).",
+        "dueDate": "2026-09-15",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "cit-academics",
+        "title": "Academic Record & Self-Reported Coursework",
+        "category": "application",
+        "description": "Strong emphasis on math/science rigor; report all STEM coursework in detail.",
+        "dueDate": "2026-10-15",
+        "estimatedMinutes": 90
+      },
+      {
+        "id": "cit-essays",
+        "title": "Caltech Supplemental Essays",
+        "category": "essays",
+        "description": "Multiple short essays focused on STEM curiosity and creative problem-solving.",
+        "dueDate": "2026-10-25",
+        "estimatedMinutes": 480
+      },
+      {
+        "id": "cit-rec-counselor",
+        "title": "Counselor Recommendation",
+        "category": "recommendations",
+        "description": "Counselor letter + secondary school report.",
+        "dueDate": "2026-10-01",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "cit-rec-math",
+        "title": "Math or Science Teacher Recommendation",
+        "category": "recommendations",
+        "description": "Caltech requires a STEM teacher recommendation.",
+        "dueDate": "2026-10-01",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "cit-rec-humanities",
+        "title": "Humanities Teacher Recommendation",
+        "category": "recommendations",
+        "description": "Required: humanities or social sciences teacher.",
+        "dueDate": "2026-10-01",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "cit-scores",
+        "title": "Submit SAT or ACT Scores",
+        "category": "testing",
+        "description": "Caltech reinstated standardized testing requirements; check current policy.",
+        "dueDate": "2026-10-31",
+        "estimatedMinutes": 20
+      },
+      {
+        "id": "cit-fee",
+        "title": "Pay $75 Application Fee or Waiver",
+        "category": "application",
+        "description": "Fee waiver available.",
+        "dueDate": "2026-11-01",
+        "estimatedMinutes": 10
+      },
+      {
+        "id": "cit-submit",
+        "title": "Submit Application",
+        "category": "application",
+        "description": "EA: Nov 1. RD: Jan 3.",
+        "dueDate": "2026-11-01",
+        "estimatedMinutes": 30
+      },
+      {
+        "id": "cit-css",
+        "title": "Submit CSS Profile",
+        "category": "financial",
+        "description": "Required for institutional aid.",
+        "dueDate": "2026-11-15",
+        "estimatedMinutes": 90
+      },
+      {
+        "id": "cit-fafsa",
+        "title": "Submit FAFSA",
+        "category": "financial",
+        "description": "Required for federal aid.",
+        "dueDate": "2027-02-15",
+        "estimatedMinutes": 60
+      }
+    ]
+  },
+  "georgetown_app_template": {
+    "platform": "Georgetown Application",
+    "platformUrl": "https://uadmissions.georgetown.edu",
+    "deadlines": {
+      "rea": "2026-11-01",
+      "rd": "2027-01-10",
+      "fafsa_due": "2027-02-15"
+    },
+    "tasks": [
+      {
+        "id": "gu-account",
+        "title": "Create Georgetown Application Account",
+        "category": "application",
+        "description": "Georgetown uses its own application, not Common App.",
+        "dueDate": "2026-09-15",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "gu-bio",
+        "title": "Complete Biographical Information",
+        "category": "application",
+        "description": "Personal, family, residency.",
+        "dueDate": "2026-10-15",
+        "estimatedMinutes": 30
+      },
+      {
+        "id": "gu-academics",
+        "title": "Academic Record & Coursework",
+        "category": "application",
+        "description": "Self-reported transcript with grades and rigor info.",
+        "dueDate": "2026-10-15",
+        "estimatedMinutes": 60
+      },
+      {
+        "id": "gu-essays",
+        "title": "Write Required Essays (3 short + 1 long)",
+        "category": "essays",
+        "description": "Why Georgetown, why your school within Georgetown, plus shorter prompts.",
+        "dueDate": "2026-10-25",
+        "estimatedMinutes": 480
+      },
+      {
+        "id": "gu-rec-counselor",
+        "title": "Counselor Recommendation",
+        "category": "recommendations",
+        "description": "Plus secondary school report.",
+        "dueDate": "2026-10-01",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "gu-rec-teacher",
+        "title": "Teacher Recommendation",
+        "category": "recommendations",
+        "description": "One teacher recommendation required (more accepted).",
+        "dueDate": "2026-10-01",
+        "estimatedMinutes": 15
+      },
+      {
+        "id": "gu-scores",
+        "title": "Submit Test Scores (Optional)",
+        "category": "testing",
+        "description": "Georgetown is test-optional but recommends submitting if scores are competitive.",
+        "dueDate": "2026-10-31",
+        "estimatedMinutes": 20
+      },
+      {
+        "id": "gu-interview",
+        "title": "Alumni Interview (Optional)",
+        "category": "application",
+        "description": "Optional alumni interview; available in many regions.",
+        "dueDate": "2026-12-15",
+        "estimatedMinutes": 60
+      },
+      {
+        "id": "gu-fee",
+        "title": "Pay $75 Application Fee or Waiver",
+        "category": "application",
+        "description": "Fee waiver available.",
+        "dueDate": "2026-11-01",
+        "estimatedMinutes": 10
+      },
+      {
+        "id": "gu-submit",
+        "title": "Submit Application",
+        "category": "application",
+        "description": "REA: Nov 1. RD: Jan 10.",
+        "dueDate": "2026-11-01",
+        "estimatedMinutes": 30
+      },
+      {
+        "id": "gu-css",
+        "title": "Submit CSS Profile",
+        "category": "financial",
+        "description": "Required for institutional aid.",
+        "dueDate": "2026-11-15",
+        "estimatedMinutes": 90
+      },
+      {
+        "id": "gu-fafsa",
+        "title": "Submit FAFSA",
+        "category": "financial",
+        "description": "Required for federal aid.",
+        "dueDate": "2027-02-15",
+        "estimatedMinutes": 60
+      }
+    ]
+  }
+}

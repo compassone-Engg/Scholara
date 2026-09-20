@@ -1,0 +1,13 @@
+name = "scholara"
+compatibility_date = "2025-04-01"
+pages_build_output_dir = "./out"
+
+# NOTE FOR STUDENTS: the database below belongs to the production project.
+# Create your own D1 database and replace `database_id` before deploying:
+#   npx wrangler d1 create my-scholara-events
+# Deploying with this id will fail unless you have production access — which
+# you shouldn't. See SETUP.md, Part 4.
+[[d1_databases]]
+binding = "EVENTS_DB"
+database_name = "scholara-events"
+database_id = "6a05808e-501f-422c-8adc-c9ffc67550ea"
