@@ -24,6 +24,10 @@ export async function onRequestPost({ request, env }) {
     return json({ error: 'batch_too_large', max: MAX_BATCH }, 400);
   }
 
+  if (!env.EVENTS_DB) {
+    return json({ error: 'events_db_not_configured' }, 503);
+  }
+
   const stmt = env.EVENTS_DB.prepare(
     'INSERT INTO student_events (id, pseudonymous_id, event_type, payload, app_version, client_timestamp) VALUES (?, ?, ?, ?, ?, ?)'
   );
