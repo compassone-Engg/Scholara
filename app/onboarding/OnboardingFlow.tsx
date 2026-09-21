@@ -772,13 +772,15 @@ function SplashScreen({ onStart }: { onStart: () => void }) {
 export default function OnboardingFlow() {
   const [step, setStep] = useState<0 | 1 | 2 | 3 | 4>(0);
   const [profile, setProfile] = useState<StudentProfile>({ ...DEFAULT_PROFILE });
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const { completeOnboarding } = useApp();
 
   const handleChange = (updates: Partial<StudentProfile>) => {
     setProfile(prev => ({ ...prev, ...updates }));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step === 0) {
       track('onboarding_started');
       setStep(1);
@@ -788,7 +790,16 @@ export default function OnboardingFlow() {
       track('onboarding_step_completed', { step });
       setStep(s => (s + 1) as 1 | 2 | 3 | 4);
     } else {
-      completeOnboarding(profile);
+      setIsSaving(true);
+      setSaveError(null);
+      try {
+        await completeOnboarding(profile);
+      } catch (err) {
+        console.error('Onboarding save failed:', err);
+        setSaveError('We could not save your profile. Please try again.');
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
@@ -868,23 +879,28 @@ export default function OnboardingFlow() {
             Enter your name to continue
           </div>
         )}
+        {saveError && (
+          <div role="alert" style={{ fontSize: 12, color: '#FCA5A5', marginBottom: 8, textAlign: 'center' }}>
+            {saveError}
+          </div>
+        )}
         <button
           onClick={handleNext}
-          disabled={!stepOk()}
+          disabled={!stepOk() || isSaving}
           style={{
             width: '100%',
             height: 52,
             borderRadius: 14,
-            background: stepOk() ? 'linear-gradient(135deg, #2DD4BF, #0D9488)' : '#1E302E',
+            background: stepOk() && !isSaving ? 'linear-gradient(135deg, #2DD4BF, #0D9488)' : '#1E302E',
             border: 'none',
-            color: stepOk() ? '#0A0F0E' : '#4A6560',
+            color: stepOk() && !isSaving ? '#0A0F0E' : '#4A6560',
             fontSize: 16,
             fontWeight: 700,
-            cursor: stepOk() ? 'pointer' : 'not-allowed',
+            cursor: stepOk() && !isSaving ? 'pointer' : 'not-allowed',
             transition: 'all 0.2s',
           }}
         >
-          {step < 4 ? 'Continue →' : 'See My Matches'}
+          {step < 4 ? 'Continue →' : isSaving ? 'Saving…' : 'See My Matches'}
         </button>
       </div>
     </div>
