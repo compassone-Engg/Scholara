@@ -1,8 +1,8 @@
-// Gemini 2.5 Flash provider. Implements function calling per:
+// Gemini 3.5 Flash provider. Implements function calling per:
 // https://ai.google.dev/gemini-api/docs/function-calling
 
 const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta';
-const DEFAULT_MODEL = 'gemini-2.5-flash';
+const DEFAULT_MODEL = 'gemini-3.5-flash';
 
 export async function runGeminiTurn({ model, system, messages, tools, env }) {
   const apiKey = env?.GEMINI_API_KEY;

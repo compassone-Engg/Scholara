@@ -94,7 +94,7 @@ export async function onRequestPost({ request, env }) {
   const toolCallsLog = [];
   let lastResp = null;
   let provider = 'gemini';
-  let model = 'gemini-2.5-flash';
+  let model = 'gemini-3.5-flash';
 
   for (let loop = 0; loop < MAX_TOOL_LOOPS; loop++) {
     const turn = await runChatTurn({
