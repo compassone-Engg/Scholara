@@ -41,7 +41,7 @@ interface AppContextType {
   readinessScore: number;
   topTip: string;
   onboardingComplete: boolean;
-  completeOnboarding: (profile: StudentProfile) => void;
+  completeOnboarding: (profile: StudentProfile) => Promise<void>;
   schools: School[];
   isCalculating: boolean;
 }
@@ -137,19 +137,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     });
   }, [persistProfile]);
 
-  const completeOnboarding = useCallback((p: StudentProfile) => {
+  const completeOnboarding = useCallback(async (p: StudentProfile) => {
+    // Persist before transitioning out of onboarding. Previously this was
+    // fire-and-forget, so the UI could report onboarding as complete even when
+    // the Supabase write failed (leaving the trigger-created profile row blank).
+    await store.save(p);
+    await store.setOnboardingComplete();
+
     setProfile(p);
     setOnboardingDone(true);
-    // Fire-and-forget. The user can't actively block on this and the toast
-    // / next page will work fine with in-memory state.
-    (async () => {
-      try {
-        await store.save(p);
-        await store.setOnboardingComplete();
-      } catch (err) {
-        console.error('Onboarding save failed:', err);
-      }
-    })();
     track('onboarding_completed', {
       gpa_band: gpaBand(p.gpaUnweighted),
       sat_band: satBand(p.satScore),
