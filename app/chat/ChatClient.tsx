@@ -5,7 +5,8 @@ import { useApp } from '../lib/context';
 import BottomNav from '../components/BottomNav';
 import { GraduationCap } from '../components/ScholaraLogo';
 import { getPseudoId, track } from '../lib/events';
-import { loadApplying, loadFavorites } from '../lib/storage';
+import { useFavorites } from '../lib/useFavorites';
+import { useApplying } from '../lib/useApplying';
 
 type ChatMsg = { role: 'user' | 'assistant'; content: string; toolsUsed?: string[]; isPlaceholder?: boolean };
 
@@ -48,6 +49,8 @@ function getConversationId(): string {
 
 export default function ChatClient() {
   const { profile, onboardingComplete } = useApp();
+  const { favorites } = useFavorites();
+  const { applying } = useApplying();
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
@@ -99,8 +102,6 @@ export default function ChatClient() {
     try {
       const conversationId = getConversationId();
       const pseudoId = getPseudoId();
-      const applying = loadApplying();
-      const favorites = loadFavorites();
       const apiMessages = nextMessages.map(m => ({ role: m.role, content: m.content }));
 
       const resp = await fetch('/api/chat', {
@@ -148,7 +149,7 @@ export default function ChatClient() {
     } finally {
       setSending(false);
     }
-  }, [messages, profile, sending]);
+  }, [messages, profile, sending, applying, favorites]);
 
   const clearHistory = () => {
     if (!confirm('Clear this conversation?')) return;
