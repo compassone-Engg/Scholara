@@ -216,6 +216,21 @@ alter table public.chat_messages       enable row level security;
 alter table public.chat_rate_limit     enable row level security;
 alter table public.student_events      enable row level security;
 
+-- ─── Table-level grants ─────────────────────────────────────────────────────
+-- RLS policies alone are not enough: Postgres requires the `authenticated`
+-- role to hold baseline table-level privileges before an operation is even
+-- attempted, independently of what any policy below allows. Tables created
+-- via raw SQL (as here) do NOT get this automatically the way tables created
+-- through Supabase's Table Editor UI do. Without this grant, every query from
+-- a signed-in user fails with "permission denied for table ..." (Postgres
+-- error 42501), even when every policy below is written correctly.
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on all tables in schema public to authenticated;
+-- Also cover any table added to this schema later, so a new table doesn't
+-- silently reintroduce this same bug.
+alter default privileges in schema public
+  grant select, insert, update, delete on tables to authenticated;
+
 -- ─── Policies ──
 -- Pattern: own-row access only. auth.uid() is the user's auth ID.
 
