@@ -33,23 +33,26 @@ function calcTestPercentile(score, p25, p75) {
   return 0.75 + Math.min(1, (score - p75) / (max - p75)) * 0.25;
 }
 
-function calcTestScore(profile, school) {
-  const hasSAT = profile.satScore && profile.satScore > 400;
-  const hasACT = profile.actScore && profile.actScore > 1;
-  if (!hasSAT && !hasACT) {
+// testMode: 'auto' (submit whichever score yields the higher percentile at
+// this school — matches real admissions behavior), 'sat_only', or 'act_only'.
+// Mirrors app/lib/algorithm.ts's calcTestScore exactly.
+function calcTestScore(profile, school, testMode = 'auto') {
+  const useSAT = testMode !== 'act_only' && profile.satScore && profile.satScore > 400;
+  const useACT = testMode !== 'sat_only' && profile.actScore && profile.actScore > 1;
+  if (!useSAT && !useACT) {
     const penalty = school.selectivity === 'ultra_selective' ? 0.15
                   : school.selectivity === 'highly_selective' ? 0.10
                   : school.selectivity === 'selective' ? 0.05 : 0;
     return Math.max(0.1, 0.5 - penalty);
   }
-  let total = 0, n = 0;
-  if (hasSAT && school.sat_25 && school.sat_75) {
-    total += calcTestPercentile(profile.satScore, school.sat_25, school.sat_75); n++;
-  }
-  if (hasACT && school.act_25 && school.act_75) {
-    total += calcTestPercentile(profile.actScore, school.act_25, school.act_75); n++;
-  }
-  return n > 0 ? total / n : 0.5;
+  const satPct = (useSAT && school.sat_25 && school.sat_75)
+    ? calcTestPercentile(profile.satScore, school.sat_25, school.sat_75) : null;
+  const actPct = (useACT && school.act_25 && school.act_75)
+    ? calcTestPercentile(profile.actScore, school.act_25, school.act_75) : null;
+  if (satPct !== null && actPct !== null) return Math.max(satPct, actPct); // submit the better one
+  if (satPct !== null) return satPct;
+  if (actPct !== null) return actPct;
+  return 0.5; // school missing 25/75 bands → neutral
 }
 
 function calcRigorScore(profile, school) {
@@ -122,9 +125,9 @@ function scoreToChance(score, ar) {
   return Math.round(Math.min(hi, Math.max(lo, raw)) * 100);
 }
 
-export function calculateMatch(profile, school, appType = 'rd') {
+export function calculateMatch(profile, school, appType = 'rd', testMode = 'auto') {
   const gpa = calcGpaPercentile(profile.gpaUnweighted || 0, school);
-  const test = calcTestScore(profile, school);
+  const test = calcTestScore(profile, school, testMode);
   const rigor = calcRigorScore(profile, school);
   const ec = calcEcScore(profile, school);
   const remaining = 1 - (school.gpa_weight || 0) - (school.test_weight || 0)
