@@ -164,6 +164,17 @@ export function detectMilestones(s: MilestoneInputs, store: MilestoneStore): Mil
     tryAppend('onboarding_complete', undefined, {});
   }
 
+  // Every other milestone below is a "you made progress" celebration, which
+  // only makes sense once there's a real baseline to progress from. While
+  // onboarding itself is still in flight, the profile moves from blank
+  // defaults to real values field-by-field, and matchResults gets
+  // recalculated after every keystroke — so dozens of schools can cross
+  // category boundaries in a single onboarding session. Detecting those as
+  // milestones would queue a toast per school, one after another. Skip
+  // detection entirely until onboarding has actually finished; once it has,
+  // genuine changes the student makes afterward are detected normally.
+  if (!s.onboardingComplete) return newly;
+
   // First favorite (fires once)
   if (s.favorites.length > 0) {
     tryAppend('first_favorite', undefined, { count: s.favorites.length });
