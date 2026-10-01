@@ -18,8 +18,11 @@ import checklistsData from '../../data/checklists.json';
  * Detects new milestones whenever profile, match results, favorites, applying,
  * or checklist progress change. Returns:
  *   - allEvents: every persisted event, newest last
- *   - newEvents: events that just landed this render (for toast)
- *   - clearNewEvents: caller calls this once they've been displayed
+ *   - newBatches: queue of milestone batches awaiting display; every event
+ *     detected in the same pass stays together as one batch, so the caller
+ *     can render them as a single grouped toast instead of one at a time
+ *   - consumeOldestBatch: caller calls this once the oldest batch has been
+ *     shown, so the next one (if any) can take its turn
  */
 export function useMilestones() {
   const { profile, matchResults, readinessScore, onboardingComplete } = useApp();
@@ -35,7 +38,11 @@ export function useMilestones() {
   const prevChecklistRef = useRef<Record<string, Record<string, boolean>> | null>(null);
 
   const [allEvents, setAllEvents] = useState<MilestoneEvent[]>(() => localMilestoneStore.list());
-  const [newEvents, setNewEvents] = useState<MilestoneEvent[]>([]);
+  // Events are queued in BATCHES rather than a flat list — every milestone
+  // detected in a single pass (e.g. several schools moving up a category
+  // from one profile edit) stays grouped together, so the toast can show
+  // them as one combined notification instead of a strung-out sequence.
+  const [newBatches, setNewBatches] = useState<MilestoneEvent[][]>([]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -67,7 +74,7 @@ export function useMilestones() {
     const fresh = detectMilestones(inputs, localMilestoneStore);
     if (fresh.length > 0) {
       setAllEvents(localMilestoneStore.list());
-      setNewEvents(prev => [...prev, ...fresh]);
+      setNewBatches(prev => [...prev, fresh]);
     }
 
     // Update refs for next diff
@@ -78,9 +85,11 @@ export function useMilestones() {
     prevChecklistRef.current = checklistProgress;
   }, [profile, matchResults, readinessScore, favorites, applying, onboardingComplete]);
 
-  const consumeNewEvent = (id: string) => {
-    setNewEvents(prev => prev.filter(e => e.id !== id));
+  // Call once the currently-visible batch has finished showing; dequeues it
+  // so the next batch (if any) takes its turn.
+  const consumeOldestBatch = () => {
+    setNewBatches(prev => prev.slice(1));
   };
 
-  return { allEvents, newEvents, consumeNewEvent };
+  return { allEvents, newBatches, consumeOldestBatch };
 }
