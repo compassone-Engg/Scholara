@@ -106,6 +106,12 @@ You'll need your own Cloudflare account and your own D1 database if you want the
 
 **Changes to `data/schools.json` don't show up.** Restart the dev server. JSON is imported at build time, not watched.
 
+**Sign-in works, but saving your profile fails with "We could not save your profile" and the browser console shows `permission denied for table profiles` (Postgres error `42501`).** Your Supabase project is missing the table-level grants for the `authenticated` role — RLS policies alone don't grant access, they only restrict it once baseline access exists. Re-run `migrations/supabase/0001_init.sql` in the SQL Editor (it's idempotent, safe to run again) to pick up the `grant` statements near the bottom, or run just these two lines directly:
+```sql
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on all tables in schema public to authenticated;
+```
+
 ---
 
 ## Getting oriented
