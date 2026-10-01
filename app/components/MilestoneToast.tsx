@@ -9,12 +9,15 @@ const TOAST_DURATION_MS = 4500;
 
 /**
  * Global mount: detects new milestones via the hook and shows them as
- * sliding toasts at the top. One at a time; queue empties one-per-cycle.
+ * sliding toasts at the top. Milestones detected in the same pass (e.g.
+ * several schools moving up a category from one profile edit) are grouped
+ * into a single combined toast instead of being strung out one after
+ * another; separate batches still display one at a time.
  */
 export default function MilestoneToast() {
-  const { newEvents, consumeNewEvent } = useMilestones();
+  const { newBatches, consumeOldestBatch } = useMilestones();
   const { schools } = useApp();
-  const [visible, setVisible] = useState<MilestoneEvent | null>(null);
+  const [visibleBatch, setVisibleBatch] = useState<MilestoneEvent[] | null>(null);
 
   const schoolNameFor = (unitid: string): string | null => {
     return schools.find(s => s.unitid === unitid)?.short
@@ -22,26 +25,49 @@ export default function MilestoneToast() {
       ?? null;
   };
 
-  // If nothing is visible and queue has events, dequeue the oldest
+  // If nothing is visible and the queue has a batch waiting, dequeue the oldest one.
   useEffect(() => {
-    if (visible) return;
-    if (newEvents.length === 0) return;
-    const next = newEvents[0];
-    setVisible(next);
+    if (visibleBatch) return;
+    if (newBatches.length === 0) return;
+    const next = newBatches[0];
+    setVisibleBatch(next);
     const t = setTimeout(() => {
-      consumeNewEvent(next.id);
-      setVisible(null);
+      consumeOldestBatch();
+      setVisibleBatch(null);
     }, TOAST_DURATION_MS);
     return () => clearTimeout(t);
-  }, [visible, newEvents, consumeNewEvent]);
+  }, [visibleBatch, newBatches, consumeOldestBatch]);
 
-  if (!visible) return null;
+  if (!visibleBatch) return null;
 
-  const rendered = renderMilestone(visible, { schoolNameFor });
+  const dismiss = () => {
+    consumeOldestBatch();
+    setVisibleBatch(null);
+  };
+
+  let emoji: string;
+  let title: string;
+  let subtitle: string | undefined;
+
+  if (visibleBatch.length === 1) {
+    const rendered = renderMilestone(visibleBatch[0], { schoolNameFor });
+    emoji = rendered.emoji;
+    title = rendered.title;
+    subtitle = rendered.subtitle;
+  } else {
+    // Several milestones fired from the same change — group them into one
+    // toast rather than queuing them to show one after another.
+    const titles = visibleBatch.map(e => renderMilestone(e, { schoolNameFor }).title);
+    const shown = titles.slice(0, 2);
+    const extra = titles.length - shown.length;
+    emoji = '🎉';
+    title = `${visibleBatch.length} updates just landed`;
+    subtitle = shown.join(' · ') + (extra > 0 ? ` · +${extra} more` : '');
+  }
 
   return (
     <div
-      onClick={() => { consumeNewEvent(visible.id); setVisible(null); }}
+      onClick={dismiss}
       style={{
         position: 'fixed',
         top: 'max(16px, env(safe-area-inset-top, 16px))',
@@ -71,7 +97,7 @@ export default function MilestoneToast() {
           cursor: 'pointer',
         }}
       >
-        <div style={{ fontSize: 26, flexShrink: 0 }}>{rendered.emoji}</div>
+        <div style={{ fontSize: 26, flexShrink: 0 }}>{emoji}</div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
             fontSize: 14,
@@ -81,11 +107,18 @@ export default function MilestoneToast() {
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
           }}>
-            {rendered.title}
+            {title}
           </div>
-          {rendered.subtitle && (
-            <div style={{ fontSize: 11, color: '#7A9E9B', marginTop: 1 }}>
-              {rendered.subtitle}
+          {subtitle && (
+            <div style={{
+              fontSize: 11,
+              color: '#7A9E9B',
+              marginTop: 1,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}>
+              {subtitle}
             </div>
           )}
         </div>
